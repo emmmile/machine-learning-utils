@@ -4,7 +4,7 @@
 #include <vector>
 #include <unistd.h>
 #include <initializer_list>
-#include "random.h"
+#include "random.hpp"
 #include "pso.hpp"
 #include "ackley.hpp"
 //#include "cameraraw.hpp"

@@ -5,11 +5,11 @@ CONFIG += qt
 SOURCES += main.cpp
 
 HEADERS += \
-    random.h \
     vect.hpp \
     particle.hpp \
     pso.hpp \
-    ackley.hpp
+    ackley.hpp \
+    random.hpp
 
 LIBS += -s
 QMAKE_CXXFLAGS += -O3 -ffast-math -std=c++0x -funroll-loops -mfpmath=sse -msse -msse2 -msse3 -mssse3 -march=corei7
