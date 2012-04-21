@@ -61,11 +61,11 @@ public:
 	}
 
 	S get_best ( ) const {
-		return min_element( particles.begin(), particles.end(), cmp<S> )->get_best();
+		return min_element( particles.begin(), particles.end() )->get_best();
 	}
 
 	ctype get_best_value ( ) const {
-		return min_element( particles.begin(), particles.end(), cmp<S> )->get_best_value();
+		return min_element( particles.begin(), particles.end() )->get_best_value();
 	}
 
 	friend ostream& operator<< ( ostream & os, const pso& o ) {

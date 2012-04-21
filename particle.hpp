@@ -5,20 +5,6 @@
 #include <iostream>
 using namespace std;
 
-template<class S>
-class particle;
-
-
-template<class S>
-bool cmp ( const particle<S>& a, const particle<S>& b ) {
-	return a.get_best_value() < b.get_best_value();
-}
-
-template<class S>
-bool cmp_ptr ( const particle<S>* a, const particle<S>* b ) {
-	return cmp<S>( *a, *b );
-	//return a->get_best_value() < b->get_best_value();
-}
 
 
 template<class S = vect<double, 2> >
@@ -51,7 +37,7 @@ public:
 	// The algorithm was working anyway, slowly but working.
 	void move ( ctype costriction, ctype phi1, ctype phi2, Random& gen ) {
 		S cognitive = pbest - this->position;
-		S social = (*min_element( neighbours.begin(), neighbours.end(), cmp_ptr<S> ))->pbest - this->position;
+		S social = (*min_element( neighbours.begin(), neighbours.end(), cmp_ptr ))->pbest - this->position;
 
 		this->velocity = ( costriction * ( this->velocity + cognitive.random_stretch( phi1, gen ) + social.random_stretch( phi2, gen ) ) );
 		// EXPERIMENTAL, sometimes I mutate the velocity to avoid getting stuck somewhere
@@ -75,6 +61,16 @@ public:
 
 	S get_best ( ) const {
 		return pbest;
+	}
+
+
+	bool operator< ( const particle<S>& a ) const {
+		return value < a.value;
+	}
+
+	static bool cmp_ptr ( const particle<S>* a, const particle<S>* b ) {
+		return *a < *b;
+		//return a->get_best_value() < b->get_best_value();
 	}
 
 	friend ostream& operator<< ( ostream & os, const particle& p ) {
