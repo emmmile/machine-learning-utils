@@ -11,7 +11,7 @@
 using namespace std;
 
 
-template<class S = vect<double, 2> >
+template<class S = vect<double, 2>, class F = double>
 class pso {
 	typedef typename S::ctype ctype;	// XXX already in particle
 
@@ -21,7 +21,7 @@ class pso {
 	S maxvalues;
 public:
 	//TODO implement constructor that takes also a functor
-	pso ( uint size, ctype (*f)( const S& ), const S& minvalues,
+	pso ( uint size, F (*f)( const S& ), const S& minvalues,
 		const S& maxvalues, int seed = 12345678 ) : particles( size ) {
 
 		gen.seed( seed );
@@ -64,7 +64,7 @@ public:
 		return min_element( particles.begin(), particles.end() )->get_best();
 	}
 
-	ctype get_best_value ( ) const {
+	F get_best_value ( ) const {
 		return min_element( particles.begin(), particles.end() )->get_best_value();
 	}
 

@@ -12,6 +12,4 @@ HEADERS += \
     random.hpp
 
 LIBS += -s
-QMAKE_CXXFLAGS += -O3 -ffast-math -std=c++0x -funroll-loops -mfpmath=sse -msse -msse2 -msse3 -mssse3 -march=corei7
-QMAKE_CXXFLAGS -= -O2 -g -march=x86-64 -mtune=generic
 
