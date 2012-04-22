@@ -4,10 +4,10 @@
 #include <vector>
 #include <unistd.h>
 #include <initializer_list>
+#include <gmpxx.h>
 #include "random.hpp"
 #include "pso.hpp"
 #include "ackley.hpp"
-//#include "cameraraw.hpp"
 using namespace std;
 
 
@@ -15,20 +15,20 @@ using namespace std;
 #define trials 20
 
 
+// simple test for functions of type T (*f)( vect<T, dim> )
+template<class T = double>
+void testFunction ( T (*f)( const vect<T,dim>& ) ) {
+	vect<T, dim> zero;
+	cout << "f(0) = " << f( zero ) << endl;
 
-// test for solving ackley problem with many dimensions
-void testAckley ( ) {
-	vect<double, dim> zero;
-	cout << "f(0) = " << ackley<double, dim>( zero ) << endl;
-
-	vect<double, dim> minv ( 32.0 );
-	vect<double, dim> maxv = -minv;
+	vect<T, dim> minv ( 32.0 );
+	vect<T, dim> maxv = -minv;
 
 	int counter = 0;
-	double avg = 0.0;
+	T avg = 0.0;
 
 	for ( uint i = 0; i < trials; ++i ) {
-		pso<vect<double, dim> > solver( 30, ackley<double, dim>, minv, maxv, i );
+		pso<vect<T, dim>, T > solver( 30, f, minv, maxv, i );
 		solver.run( 1000, 1.1, 3.3 );// 2.245, 1.925 );
 		cout << solver << endl;
 
@@ -47,10 +47,11 @@ void testAckley ( ) {
 //OVERALL PRECISION = 100%
 //AVERAGE RESULT = 4.03836e-05
 
-
+#define test( T, dim, fun ) \
+	testFunction<T> ( fun<vect<T,dim> > )
 
 int main() {
-	testAckley();
+	test( int, dim, parabola );
 
 
 	return 0;

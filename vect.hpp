@@ -20,8 +20,8 @@ class vect {
 	T values [N];
 
 public:
-	typedef T ctype;	// component type
-	const uint size = N;	// vector size (number of dimensions)
+	typedef T CType;		// component type
+	static const uint dims = N;	// vector size (number of dimensions)
 
 	// initializes the vector in the origin
 	vect ( const T value = 0 ) {
@@ -87,7 +87,7 @@ public:
 		return vect(*this) += v;
 	}
 
-    // euclidean norm
+	// euclidean norm
 	T norm ( ) const {
 		/*T out = 0.0;
 		for ( uint i = 0; i < N; ++i )
@@ -102,7 +102,7 @@ public:
 		return *this;
 	}
 
-    // dot product of two vectors
+	// dot product of two vectors
 	T operator* ( const vect& v ) const {
 		//return inner_product( values, values + N, v.values, 0 );
 		T out = 0;
@@ -119,24 +119,25 @@ public:
 		return *this;
 	}
 
-    // these functions are specifically meant for PSO. Instead of scaling the vector
+	// these functions are specifically meant for PSO. Instead of scaling the vector
 	// by the scalar phi, it makes a random scaling
-    vect random_stretch ( const T& phi, Random& gen ) {
-        //vect out( *this );
+	vect random_stretch ( const T& phi, Random& gen ) {
+		//vect out( *this );
 		for ( uint i = 0; i < N; ++i )
-            values[i] *= phi * gen.real();
-        return *this;
-    }
+			values[i] *= phi * gen.real();
 
-    // makes a little mutation to one component of the vector, like in genetic algorithms
-    vect& random_mutate( const T& step, Random& gen, const T& p = 0.01 ) {
-        // XXX an exponentially decreasing function (of the distance) could be used, but is slower!
-        //if ( gen.real() < 0.01 * exp( -social.norm() ) ) {
-        if ( gen.real() < p )
-            values[gen.integer() % N] += gen.realnegative() * step;
+		return *this;
+	}
 
-        return *this;
-    }
+	// makes a little mutation to one component of the vector, like in genetic algorithms
+	vect& random_mutate( const T& step, Random& gen, const T& p = 0.01 ) {
+		// XXX an exponentially decreasing function (of the distance) could be used, but is slower!
+		//if ( gen.real() < 0.01 * exp( -social.norm() ) ) {
+		if ( gen.real() < p )
+			values[gen.integer() % N] += gen.realnegative() * step;
+
+		return *this;
+	}
 
 	friend vect operator* ( T s, const vect& v ) {
 		return vect(v) *= s;

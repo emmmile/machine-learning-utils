@@ -11,12 +11,12 @@
 using namespace std;
 
 
-template<class S = vect<double, 2>, class F = double>
+template<class S = vect<double, 2>, class F = double, class CType = typename S::CType>
 class pso {
-	typedef typename S::ctype ctype;	// XXX already in particle
+	//typedef typename S::ctype ctype;	// XXX already in particle
 
 	Random gen;
-	vector<particle<S> > particles;
+	vector<particle<S, F, CType> > particles;
 	S minvalues;
 	S maxvalues;
 public:
@@ -34,7 +34,7 @@ public:
 			S v;
 
 			// lbest implementation
-			vector<particle<S>*> ring ( 2 );
+			vector<particle<S, F, CType>*> ring ( 2 );
 			ring[0] = &particles[(i - 1 + particles.size() ) % particles.size()];
 			ring[1] = &particles[(i + 1 + particles.size() ) % particles.size()];
 
@@ -42,9 +42,9 @@ public:
 		}
 	}
 
-	void run ( uint iterations, ctype phi1 = 1.8, ctype phi2 = 2.3 ) {
-		ctype phi = phi1 + phi2;
-		ctype costriction = 2.0 / ( phi - 2.0 + sqrt( phi * phi - 4.0 * phi ) );
+	void run ( uint iterations, CType phi1 = 1.8, CType phi2 = 2.3 ) {
+		CType phi = phi1 + phi2;
+		CType costriction = 2.0 / ( phi - 2.0 + sqrt( phi * phi - 4.0 * phi ) );
 		//costriction *= 1.2;	// this is good for the 100 dimensional case, maybe because increases the convergence time
 
 		//cout << costriction << endl << phi1 * costriction << endl << phi2 * costriction << endl;

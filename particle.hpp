@@ -7,9 +7,9 @@ using namespace std;
 
 
 
-template<class S = vect<double, 2>, class F = double>
+template<class S = vect<double, 2>, class F = double, class CType = typename S::CType>
 class particle {
-	typedef typename S::ctype ctype;
+	//typedef typename S::CType CType;
 
 	S position;
 	S velocity;
@@ -35,7 +35,7 @@ public:
 	// NOTE. This is extremely interesting. In a minimization problem I erroneusly set max_element, instead of
 	// min_element, so I was searching for the maximum value in the neighbours instead of the maximum!!!
 	// The algorithm was working anyway, slowly but working.
-	void move ( ctype costriction, ctype phi1, ctype phi2, Random& gen ) {
+	void move ( CType costriction, CType phi1, CType phi2, Random& gen ) {
 		S cognitive = pbest - this->position;
 		S social = (*min_element( neighbours.begin(), neighbours.end(), cmp_ptr ))->pbest - this->position;
 
@@ -64,11 +64,11 @@ public:
 	}
 
 
-	bool operator< ( const particle<S>& a ) const {
+	bool operator< ( const particle& a ) const {
 		return value < a.value;
 	}
 
-	static bool cmp_ptr ( const particle<S>* a, const particle<S>* b ) {
+	static bool cmp_ptr ( const particle* a, const particle* b ) {
 		return *a < *b;
 		//return a->get_best_value() < b->get_best_value();
 	}

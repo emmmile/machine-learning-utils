@@ -5,33 +5,33 @@
 #include <math.h>
 
 #ifdef __WIN32
-template<class T, uint N>
+template<class S>
 #else
-template<class T = double, uint N = 2>
+template<class S = vect<double, 2>, class CType = typename S::CType>
 #endif
-T parabola ( const vect<T, N>& v ) {
-    return v.norm();
+CType parabola ( const S& v ) {
+	return v.norm();
 }
 
 #ifdef __WIN32
-template<class T, uint N>
+template<class S>
 #else
-template<class T = double, uint N = 2>
+template<class S = vect<double, 2>, class CType = typename S::CType, uint N = S::dims>
 #endif
-T ackley ( const vect<T, N>& v ) {
-    T a = 20;
-    T b = 0.2;
-    T c = 2.0 * M_PI;
+CType ackley ( const S& v ) {
+	CType a = 20;
+	CType b = 0.2;
+	CType c = 2.0 * M_PI;
 
-    T x = 0.0;
-    T y = 0.0;
+	CType x = 0.0;
+	CType y = 0.0;
 
-    for ( uint i = 0; i < N; ++i ) {
-        x += v[i] * v[i];
-        y += cos( v[i] * c );
-    }
+	for ( uint i = 0; i < N; ++i ) {
+		x += v[i] * v[i];
+		y += cos( v[i] * c );
+	}
 
-    return -a * exp( -b * sqrt( 1.0 / N * x ) ) - exp( 1.0 / N * y ) + a + M_E;
+	return -a * exp( -b * sqrt( 1.0 / N * x ) ) - exp( 1.0 / N * y ) + a + M_E;
 }
 
 #endif // ACKLEY_HPP
