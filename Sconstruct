@@ -1,0 +1,16 @@
+
+
+env = Environment( 
+  CCFLAGS = [
+    '-Wall', '-O3', '-march=i686', '-ffast-math', '-funroll-loops', 
+    '-std=c++11', '-pipe', '-Wno-deprecated', '-msse2', '-mfpmath=sse', '-fomit-frame-pointer'
+  ],
+
+  LIBS=[],
+  LIBPATH=[],
+  CPPDEFINES=[],
+  LINKFLAGS=['-s', '-Os']
+)
+
+
+env.Program( "pso", ['main.cpp'] )

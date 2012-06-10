@@ -11,5 +11,5 @@ HEADERS += \
     ackley.hpp \
     random.hpp
 
-LIBS += -s
-
+OTHER_FILES += \
+    Sconstruct
