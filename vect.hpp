@@ -20,8 +20,6 @@ template<class T = double, uint N = 2>
 class vect {
 	T values [N];
 
-	constexpr static double random_init = 32.0;
-
 public:
 	typedef T CType;		// component type
 	static const uint dims = N;	// vector size (number of dimensions)
@@ -43,15 +41,6 @@ public:
 		copy( v.begin(), v.end(), values );
 	}
 #endif
-
-
-	vect& init ( Random& gen ) {
-		for ( uint i = 0; i < N; ++i )
-			values[i] = gen.realnegative() * random_init;
-		return *this;
-	}
-
-
 
 	// returns a reference to the i-th component. I avoid checks for more speed
 	T& operator[] ( uint i ) {
@@ -133,26 +122,6 @@ public:
 			values[i] *= s;
 		return *this;
 	}
-
-	// these functions are specifically meant for PSO. Instead of scaling the vector
-	// by the scalar phi, it makes a random scaling
-	vect random_stretch ( const T& phi, Random& gen ) {
-		//vect out( *this );
-		for ( uint i = 0; i < N; ++i )
-			values[i] *= phi * gen.real();
-
-		return *this;
-	}
-
-//	// makes a little mutation to one component of the vector, like in genetic algorithms
-//	vect& random_mutate( const T& step, Random& gen, const T& p = 0.01 ) {
-//		// XXX an exponentially decreasing function (of the distance) could be used, but is slower!
-//		//if ( gen.real() < 0.01 * exp( -social.norm() ) ) {
-//		if ( gen.real() < p )
-//			values[gen.integer() % N] += gen.realnegative() * step;
-
-//		return *this;
-//	}
 
 	friend vect operator* ( T s, const vect& v ) {
 		return vect(v) *= s;

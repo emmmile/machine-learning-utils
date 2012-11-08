@@ -8,10 +8,11 @@
 using namespace std;
 
 
-template<class SwarmType>
+template<class SwarmType, uint N>
 struct Init {
   inline void operator() ( SwarmType& p, Random& gen ) {
-    p.init(gen);
+    for ( uint i = 0; i < N; ++i )
+		  p[i] = gen.real();
   }
 };
 
@@ -38,11 +39,13 @@ struct Init {
 // SwarmType SwarmType::operator+= ( const VelocityType& )
 
 template<class SwarmType,
+         uint N = SwarmType::dims,
+         class I = Init<SwarmType, N>,
          class VelocityType = SwarmType,
          class DiffType = SwarmType,
          class ValueType = double>
 class pso {
-  typedef particle<SwarmType, VelocityType, DiffType, ValueType> particleType;
+  typedef particle<SwarmType, N, VelocityType, DiffType, ValueType> particleType;
 
   Random gen;
   vector<particleType> particles;
@@ -50,18 +53,18 @@ class pso {
 
 public:
 
-  template<typename I = Init<SwarmType> >
   pso ( uint size, int seed = 12345678, I init = I() ) : gen( seed ), particles( size ) {
     for ( uint i = 0; i < particles.size(); ++i ) {
       SwarmType p;
       VelocityType v;
       init( p, gen );
 
-      vector<particleType*> ring ( 2 );
+      particleType* ring [2];
+      //vector<particleType*> ring ( 2 );
       ring[0] = &particles[(i - 1 + particles.size() ) % particles.size()];
       ring[1] = &particles[(i + 1 + particles.size() ) % particles.size()];
 
-      particles[i].set( p, v, ring );
+      particles[i].set( p, v, ring, ring + 2 );
     }
   }
 

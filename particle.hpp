@@ -9,6 +9,7 @@ using namespace std;
 
 
 template<class SwarmType,
+         uint N = SwarmType::dims,
          class VelocityType = SwarmType,
          class DiffType = SwarmType,
          class ValueType = double>
@@ -19,11 +20,30 @@ class particle {
   ValueType value;		// personal best value
 
   vector<particle*> neighbours;
-public:
-  particle ( ) {
-
+  
+  
+  // these functions are specifically meant for PSO. Instead of scaling the vector
+  // by the scalar phi, it makes a random scaling
+  inline DiffType& random_stretch ( const double& phi, DiffType& v, Random& gen ) {
+	  //vect out( *this );
+	  for ( uint i = 0; i < N; ++i )
+		  v[i] *= phi * gen.real();
+		  
+		return v;
   }
 
+  
+public:
+  particle ( ) {
+  }
+
+
+  void set ( const SwarmType& p, const VelocityType& v, particle** beg, particle** end ) {
+    this->position = p;
+    this->velocity = v;
+    this->pbest = p;
+    this->neighbours = vector<particle*>( beg, end );
+  }
 
   void set ( const SwarmType& p, const VelocityType& v, const vector<particle*>& n ) {
     this->position = p;
@@ -53,7 +73,7 @@ public:
     DiffType social = (*min_element( neighbours.begin(), neighbours.end(), cmp_ptr ))->pbest - this->position;
 
     // is costriction meaningful in every type?
-    this->velocity = ( costriction * ( this->velocity + cognitive.random_stretch( phi1, gen ) + social.random_stretch( phi2, gen ) ) );
+    this->velocity = ( costriction * ( this->velocity + random_stretch( phi1, cognitive, gen ) + random_stretch( phi2, social, gen ) ) );
     // EXPERIMENTAL, sometimes I mutate the velocity to avoid getting stuck somewhere
             //).random_mutate( 10.0 / costriction, gen );
     this->position += this->velocity;
