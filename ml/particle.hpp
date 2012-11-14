@@ -6,16 +6,17 @@
 #include "concepts.hpp"
 #include <iostream>
 using namespace std;
-
+namespace ml {
 
 
 // The basic particle step in the swarm. Here we loose of generality
 // in the sense S must have operators compatible with a vector space
 // (e.g. taking the i-th element with [] and multiplying it by a double).
 template<class S, unsigned int N>
-class RandomStretch : public Mutation<S,N> {
+class RandomStretch : public Mutation<S> {
 public:
-  inline void operator() ( S& p, const double phi, Random& gen ) {
+  inline void operator() ( S& p, const double& phi, Random& gen ) {
+    // the signs of p are conserved
     for ( unsigned int i = 0; i < N; ++i )
       p[i] *= phi * gen.real();
   }
@@ -24,9 +25,9 @@ public:
 
 
 template<class S, unsigned int N>
-class SwarmMutation : public Mutation<S,N> {
+class SwarmMutation : public Mutation<S> {
 public:
-  inline void operator() ( S& p, const double step, Random& gen ) {
+  inline void operator() ( S& p, const double& step, Random& gen ) {
     p[gen.integer() % N] += gen.realnegative() * step;
   }
 };
@@ -90,7 +91,7 @@ public:
     this->velocity = ( costriction * ( this->velocity + cognitive + social ) );
     // EXPERIMENTAL, sometimes I mutate the velocity to avoid getting stuck somewhere
     //SwarmMutation<VelocityType, N> mutation;
-    //mutation( this->velocity, 10.0 / costriction, gen );
+    //if ( gen.real() < 0.005 ) mutation( this->velocity, 10.0 / costriction, gen );
 
     // adds the velocity to the current position
     this->position += this->velocity;
@@ -133,4 +134,5 @@ public:
   }
 };
 
+} // namespace ml
 #endif // PARTICLE_H

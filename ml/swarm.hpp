@@ -1,5 +1,5 @@
-#ifndef PSO_HPP
-#define PSO_HPP
+#ifndef SWARM_HPP
+#define SWARM_HPP
 
 #include <iostream>
 #include "vect.hpp"
@@ -7,6 +7,7 @@
 #include "concepts.hpp"
 #include <iomanip>
 using namespace std;
+namespace ml {
 
 // needed operators
 // VelocityType SwarmType::operator- ( const SwarmType& ) const
@@ -28,8 +29,12 @@ class swarm {
   vector<particleType> particles;
 public:
 
-  template<typename I = Initialization<SwarmType, N> >
-  explicit swarm ( uint size, int seed = 12345678, I init = I() ) : gen( seed ), particles( size ) {
+  template<typename I>
+  explicit swarm ( uint size,
+                   uint seed = 12345678,
+                   I init = I() )
+    : gen( seed ), particles( size )
+  {
     for ( uint i = 0; i < particles.size(); ++i ) {
       SwarmType p;
       VelocityType v;
@@ -78,5 +83,5 @@ public:
 
 
 
-
-#endif // PSO_HPP
+} // namespace ml
+#endif // SWARM_HPP

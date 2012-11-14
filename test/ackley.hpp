@@ -7,24 +7,24 @@
 #ifdef __WIN32
 template<class S>
 #else
-template<class S = vect<double, 2>, class CType = typename S::CType>
+template<class V, class S>
 #endif
-CType parabola ( const S& v ) {
+S parabola ( const V& v ) {
 	return v.norm();
 }
 
 #ifdef __WIN32
 template<class S>
 #else
-template<class S = vect<double, 2>, class CType = typename S::CType, uint N = S::dims>
+template<class V, class S, uint N>
 #endif
-CType ackley ( const S& v ) {
-	CType a = 20;
-	CType b = 0.2;
-	CType c = 2.0 * M_PI;
+S ackley ( const V& v ) {
+	S a = 20;
+	S b = 0.2;
+	S c = 2.0 * M_PI;
 
-	CType x = 0.0;
-	CType y = 0.0;
+	S x = 0.0;
+	S y = 0.0;
 
 	for ( uint i = 0; i < N; ++i ) {
 		x += v[i] * v[i];
