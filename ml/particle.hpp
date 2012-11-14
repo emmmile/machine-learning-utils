@@ -3,15 +3,39 @@
 
 #include "vect.hpp"
 #include "random.hpp"
+#include "concepts.hpp"
 #include <iostream>
 using namespace std;
 
 
 
+// The basic particle step in the swarm. Here we loose of generality
+// in the sense S must have operators compatible with a vector space
+// (e.g. taking the i-th element with [] and multiplying it by a double).
+template<class S, unsigned int N>
+class RandomStretch : public Mutation<S,N> {
+public:
+  inline void operator() ( S& p, const double phi, Random& gen ) {
+    for ( unsigned int i = 0; i < N; ++i )
+      p[i] *= phi * gen.real();
+  }
+};
+
+
+
+template<class S, unsigned int N>
+class SwarmMutation : public Mutation<S,N> {
+public:
+  inline void operator() ( S& p, const double step, Random& gen ) {
+    p[gen.integer() % N] += gen.realnegative() * step;
+  }
+};
+
+
+
 template<class SwarmType,
-         uint N = SwarmType::dims,
+         uint N,
          class VelocityType = SwarmType,
-         class DiffType = SwarmType,
          class ValueType = double>
 class particle {
   SwarmType position;
@@ -20,23 +44,10 @@ class particle {
   ValueType value;		// personal best value
 
   vector<particle*> neighbours;
-  
-  
-  // these functions are specifically meant for PSO. Instead of scaling the vector
-  // by the scalar phi, it makes a random scaling
-  inline DiffType& random_stretch ( const double& phi, DiffType& v, Random& gen ) {
-	  //vect out( *this );
-	  for ( uint i = 0; i < N; ++i )
-		  v[i] *= phi * gen.real();
-		  
-		return v;
-  }
 
-  
 public:
   particle ( ) {
   }
-
 
   void set ( const SwarmType& p, const VelocityType& v, particle** beg, particle** end ) {
     this->position = p;
@@ -69,16 +80,23 @@ public:
   void move ( F function, double costriction, double phi1, double phi2, Random& gen ) {
     // this maybe can be something else, i.e. it's not straightforward that a difference
     // between two S is again something meaningful in that space (think at turing machines).
-    DiffType cognitive = pbest - this->position;
-    DiffType social = (*min_element( neighbours.begin(), neighbours.end(), cmp_ptr ))->pbest - this->position;
+    VelocityType cognitive = pbest - this->position;
+    VelocityType social = (*min_element( neighbours.begin(), neighbours.end(), cmp_ptr ))->pbest - this->position;
 
-    // is costriction meaningful in every type?
-    this->velocity = ( costriction * ( this->velocity + random_stretch( phi1, cognitive, gen ) + random_stretch( phi2, social, gen ) ) );
+    RandomStretch<VelocityType, N> stretch;
+    stretch( cognitive, phi1, gen );
+    stretch( social,    phi2, gen );
+
+    this->velocity = ( costriction * ( this->velocity + cognitive + social ) );
     // EXPERIMENTAL, sometimes I mutate the velocity to avoid getting stuck somewhere
-            //).random_mutate( 10.0 / costriction, gen );
-    this->position += this->velocity;
+    //SwarmMutation<VelocityType, N> mutation;
+    //mutation( this->velocity, 10.0 / costriction, gen );
 
-    ValueType current = function(this->position);
+    // adds the velocity to the current position
+    this->position += this->velocity;
+    
+    // calculates the new value of the function
+    ValueType current = function( this->position );
     if ( current < value ) {
       pbest = this->position;
       value = current;
@@ -104,7 +122,6 @@ public:
 
   static bool cmp_ptr ( const particle* a, const particle* b ) {
     return *a < *b;
-   //return a->get_best_value() < b->get_best_value();
   }
 
   friend ostream& operator<< ( ostream & os, const particle& p ) {

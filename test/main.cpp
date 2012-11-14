@@ -16,11 +16,11 @@ using namespace std;
 #define iterations 1000
 
 
-template<class SwarmType, uint N>
+template<class T, uint N>
 struct MyInit {
-  inline void operator() ( SwarmType& p, Random& gen ) {
+  inline void operator() ( T& p, Random& gen ) {
     for ( uint i = 0; i < N; ++i )
-		  p[i] = 32 * gen.real();
+      p[i] = 32 * gen.real();
   }
 };
 
@@ -29,17 +29,17 @@ struct MyInit {
 // I assume that the function has the optimal value in zero
 template<class T = double>
 void testFunction ( T (*f)( const vect<T,dim>& ) ) {
-  vect<T, dim> zero;
-  cout << "f(0) = " << f( zero ) << endl;
+  typedef vect<T, dim> S;
+  typedef MyInit<S, dim> I;
+  
 
-  //vect<T, dim> minv ( 32.0 );
-  //vect<T, dim> maxv = -minv;
-
+  S zero;
   int counter = 0;
   T avg = 0.0;
+  cout << "f(0) = " << f( zero ) << endl;
 
   for ( uint i = 0; i < trials; ++i ) {
-    pso<vect<T, dim>, dim, MyInit<vect<T, dim>, dim>> solver( 30, i );
+    swarm<S, dim> solver( 30, i, I() );
     solver.run( iterations, f, 1.1, 3.3 );// 2.245, 1.925 );
     cout << solver << endl;
 

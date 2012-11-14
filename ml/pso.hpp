@@ -4,63 +4,38 @@
 #include <iostream>
 #include "vect.hpp"
 #include "particle.hpp"
+#include "concepts.hpp"
 #include <iomanip>
 using namespace std;
 
-
-template<class SwarmType, uint N>
-struct Init {
-  inline void operator() ( SwarmType& p, Random& gen ) {
-    for ( uint i = 0; i < N; ++i )
-		  p[i] = gen.real();
-  }
-};
-
-// per le differenze
-// DiffType SwarmType::operator- ( const SwarmType& ) const
-
-// per la velocity
-// DiffType DiffType::operator+ ( const DiffType& ) const
-// VelocityType VelocityType::operator+ ( const DiffType& ) const
-// friend VelocityType operator* ( const VelocityType&, const double& )
-
-// per l'aggiornamento della posizione
-// SwarmType SwarmType::operator+= ( const VelocityType& )
-
-
-
-
-
-// MAYBE DiffType == VelocityType?
-
+// needed operators
 // VelocityType SwarmType::operator- ( const SwarmType& ) const
 // VelocityType VelocityType::operator+ ( const VelocityType& ) const
 // friend VelocityType operator* ( const VelocityType&, const double& )
 // SwarmType SwarmType::operator+= ( const VelocityType& )
 
+
+
+
 template<class SwarmType,
-         uint N = SwarmType::dims,
-         class I = Init<SwarmType, N>,
+         uint N,
          class VelocityType = SwarmType,
-         class DiffType = SwarmType,
          class ValueType = double>
-class pso {
-  typedef particle<SwarmType, N, VelocityType, DiffType, ValueType> particleType;
+class swarm {
+  typedef particle<SwarmType, N, VelocityType, ValueType> particleType;
 
   Random gen;
   vector<particleType> particles;
-
-
 public:
 
-  pso ( uint size, int seed = 12345678, I init = I() ) : gen( seed ), particles( size ) {
+  template<typename I = Initialization<SwarmType, N> >
+  explicit swarm ( uint size, int seed = 12345678, I init = I() ) : gen( seed ), particles( size ) {
     for ( uint i = 0; i < particles.size(); ++i ) {
       SwarmType p;
       VelocityType v;
       init( p, gen );
 
       particleType* ring [2];
-      //vector<particleType*> ring ( 2 );
       ring[0] = &particles[(i - 1 + particles.size() ) % particles.size()];
       ring[1] = &particles[(i + 1 + particles.size() ) % particles.size()];
 
@@ -72,14 +47,7 @@ public:
   void run ( uint iterations, F function, double phi1 = 1.8, double phi2 = 2.3 ) {
     double phi = phi1 + phi2;
     double costriction = 2.0 / ( phi - 2.0 + sqrt( phi * phi - 4.0 * phi ) );
-    //costriction *= 1.2;	// this is good for the 100 dimensional case, maybe because increases the convergence time
-
-    //cout << costriction << endl << phi1 * costriction << endl << phi2 * costriction << endl;
-    // implementation of linear inertia
-    /*T winitial = 0.9;
-    T wfinal = 0.4;
-    T w = winitial;
-    T wstep = ( winitial - wfinal ) / iterations;*/
+    //costriction *= 1.2;	// this is good for ackley-100, maybe because increases the convergence time
 
     for ( uint i = 0; i < particles.size(); ++i )
       particles[i].initialize( function );
@@ -98,7 +66,7 @@ public:
     return min_element( particles.begin(), particles.end() )->get_best_value();
   }
 
-  friend ostream& operator<< ( ostream & os, const pso& o ) {
+  friend ostream& operator<< ( ostream & os, const swarm& o ) {
     //for ( uint i = 0; i < o.particles.size(); ++i )
     //    os << o.particles[i] << endl;
 

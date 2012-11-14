@@ -4,4 +4,5 @@ pso
 *.~
 Makefile
 .scons*
-main
+test/main
+test/test

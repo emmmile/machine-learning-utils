@@ -6,6 +6,7 @@ env = Environment(
     '-std=c++0x', '-pipe', '-Wno-deprecated', '-msse2', '-mfpmath=sse', '-fomit-frame-pointer'
   ],
 
+  CPPPATH=['./ml','./ml/random', './test'],
   LIBS=[],
   LIBPATH=[],
   CPPDEFINES=[],
@@ -13,4 +14,4 @@ env = Environment(
 )
 
 
-env.Program( "pso", ['main.cpp'] )
+env.Program( './test/test', './test/main.cpp' )
