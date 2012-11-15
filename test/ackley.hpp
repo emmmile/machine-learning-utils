@@ -4,20 +4,12 @@
 #include "vect.hpp"
 #include <math.h>
 
-#ifdef __WIN32
-template<class S>
-#else
 template<class V, class S>
-#endif
 S parabola ( const V& v ) {
 	return v.norm();
 }
 
-#ifdef __WIN32
-template<class S>
-#else
 template<class V, class S, uint N>
-#endif
 S ackley ( const V& v ) {
 	S a = 20;
 	S b = 0.2;

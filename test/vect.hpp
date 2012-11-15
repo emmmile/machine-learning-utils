@@ -21,9 +21,6 @@ class vect {
 	T values [N];
 
 public:
-	typedef T CType;		// component type
-	static const uint dims = N;	// vector size (number of dimensions)
-
 	// initializes the vector in the origin
 	vect ( const T value = 0 ) {
 		fill( values, values + N, value );
