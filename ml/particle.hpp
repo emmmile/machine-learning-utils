@@ -5,6 +5,7 @@
 #include "random.hpp"
 #include "concepts.hpp"
 #include <iostream>
+#include <array>
 using namespace std;
 namespace ml {
 
@@ -36,33 +37,27 @@ public:
 
 template<class SwarmType,
          uint N,
-         class VelocityType = SwarmType,
-         class ValueType = double>
+         class VelocityType,
+         class ValueType,
+         uint M>
 class particle {
   SwarmType position;
   VelocityType velocity;
   SwarmType pbest;		// personal best position
   ValueType value;		// personal best value
 
-  vector<particle*> neighbours;
+  array<particle*, M> neighbours;
+  typedef typename array<particle*, M>::iterator it;
 
 public:
   particle ( ) {
   }
 
-  void set ( const SwarmType& p, const VelocityType& v, particle** beg, particle** end ) {
+  void set ( const SwarmType& p, const VelocityType& v, it beg, it end ) {
     this->position = p;
     this->velocity = v;
     this->pbest = p;
-    this->neighbours = vector<particle*>( beg, end );
-  }
-
-  void set ( const SwarmType& p, const VelocityType& v, const vector<particle*>& n ) {
-    this->position = p;
-    this->velocity = v;
-    this->neighbours = n;
-    this->pbest = p;
-    //this->value = ?;
+    for( it i = beg; i != end; ++i ) neighbours[i-beg] = *i;
   }
 
   template<typename F>

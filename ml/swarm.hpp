@@ -21,9 +21,10 @@ namespace ml {
 template<class SwarmType,
          uint N,
          class VelocityType = SwarmType,
-         class ValueType = double>
+         class ValueType = double,
+         uint M = 2>
 class swarm {
-  typedef particle<SwarmType, N, VelocityType, ValueType> particleType;
+  typedef particle<SwarmType, N, VelocityType, ValueType, M> particleType;
 
   Random gen;
   vector<particleType> particles;
@@ -31,20 +32,19 @@ public:
 
   template<typename I>
   explicit swarm ( uint size,
-                   uint seed = 12345678,
                    I init = I() )
-    : gen( seed ), particles( size )
+    : gen( 12345678 ), particles( size )
   {
     for ( uint i = 0; i < particles.size(); ++i ) {
       SwarmType p;
       VelocityType v;
       init( p, gen );
 
-      particleType* ring [2];
+      array<particleType*, M> ring;
       ring[0] = &particles[(i - 1 + particles.size() ) % particles.size()];
       ring[1] = &particles[(i + 1 + particles.size() ) % particles.size()];
 
-      particles[i].set( p, v, ring, ring + 2 );
+      particles[i].set( p, v, ring.begin(), ring.end() );
     }
   }
 
@@ -75,7 +75,7 @@ public:
     //for ( uint i = 0; i < o.particles.size(); ++i )
     //    os << o.particles[i] << endl;
 
-    os << "BEST: " << o.get_best_value();
+    os << "best value found: " << o.get_best_value();
     //os << " at " << o.get_best();
     return os;
   }

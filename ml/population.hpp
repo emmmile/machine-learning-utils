@@ -57,12 +57,11 @@ public:
 
   template<typename Init>
   explicit population( uint size,
-                       uint seed = 12345678,
                        Init init = Init(),
                        bool st = true,
                        double pc = 0.9,
                        double pm = 0.05 )
-    : individuals( size ), gen( seed ), pmutation( pm ),
+    : individuals( size ), gen( 12345678 ), pmutation( pm ),
       pcrossover( pc ), stationary( st ), age( 0 ), explored( size )
   {
     for (uint i = 0; i < individuals.size(); ++i) {
@@ -197,7 +196,7 @@ public:
     //for ( uint i = 0; i < o.particles.size(); ++i )
     //    os << o.particles[i] << endl;
 
-    os << "BEST: " << o.get_best_value();
+    os << "best value found: " << o.get_best_value();
     //os << " at " << o.get_best();
     return os;
   }
