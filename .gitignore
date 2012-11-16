@@ -6,3 +6,4 @@ Makefile
 .scons*
 test/main
 test/test
+test/benchmark

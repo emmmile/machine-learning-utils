@@ -47,17 +47,16 @@ class particle {
   ValueType value;		// personal best value
 
   array<particle*, M> neighbours;
-  typedef typename array<particle*, M>::iterator it;
-
 public:
   particle ( ) {
   }
 
-  void set ( const SwarmType& p, const VelocityType& v, it beg, it end ) {
+  template<typename Iterator>
+  void set ( const SwarmType& p, const VelocityType& v, Iterator beg, Iterator end ) {
     this->position = p;
     this->velocity = v;
     this->pbest = p;
-    for( it i = beg; i != end; ++i ) neighbours[i-beg] = *i;
+    for( Iterator i = beg; i != end; ++i ) neighbours[i-beg] = *i;
   }
 
   template<typename F>
