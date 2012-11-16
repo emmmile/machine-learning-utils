@@ -36,12 +36,14 @@ struct MyMutation {
 
 int main() {
   swarm<V, dim> pso( 30, MyInit );
-  pso.run( 1000, ackley<V, S, dim> );
-  cout << "PSO result:\n  " << pso << endl;
+  pso.run( 2000, ackley<V, S, dim> );
+  cout << "PSO result:\n  " << pso << "\n  "
+       << "function evaluations:  " << pso.explored() << endl;
 
   population<V> ec( 100, MyInit );
   ec.run( 500, ackley<V, S, dim>, MyMutation<V,dim>( 1.0 ), MyCrossover() );
-  cout << "EC result:\n  " << ec << endl;
+  cout << "EC result:\n  " << ec << "\n  "
+       << "function evaluations:  " << ec.explored() << endl;
 
   return 0;
 }

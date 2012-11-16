@@ -1,6 +1,7 @@
 #ifndef POPULATION_HPP
 #define POPULATION_HPP
 #include <type_traits>
+#include <vector>
 #include "concepts.hpp"
 #include "random.hpp"
 using namespace std;
@@ -17,78 +18,82 @@ struct Generation {
 
 
 template<class I,
-         class ValueType = double>
+         class ValueType = double,
+         class V = unsigned short int>
 class population {
+  // this is used to avoid recalculating the fitness function in case
+  // the individual survived immutated from the last generation
   class triple {
   public:
-    I* individual;
+    I individual;
     bool changed;
     ValueType fitness;
 
-    triple( ) : changed( true ), fitness( 0.0 ) { }
-    triple( I* i, bool b, ValueType d = 0.0 ) : individual(i), changed(b), fitness(d) { }
-    inline bool operator< (const triple& another ) const {
+    triple( ) : changed(true), fitness( 0.0 ) {
+    }
+
+    triple( const I& i, bool changed, const ValueType& d = 0.0 )
+      : individual(i), changed(changed), fitness(d)
+    {
+    }
+
+    inline bool operator< ( const triple& another ) const {
       return fitness < another.fitness;
     }
   };
 
-  vector<triple> individuals;
-  Random gen;
-  double pmutation;
-  double pcrossover;
-  bool stationary;
-  unsigned int age;
-  unsigned int explored;
+  vector<triple> __individuals;
+  Random __generator;
+  double __mutation_probability;
+  double __crossover_probability;
+  uint __age;
+  uint __explored;
 
-  const static uint maximumPopulation = 400;
-  const static uint initialPopulation = 100;
+  const static uint __maximum_opulation = 400;
+  const static uint __initial_population = 100;
 
-  void erase(const uint i) {
-    // remove the i-th individual from the population
-    assert(i < individuals.size());
-    delete individuals[i].individual;
-    // here is better to first move the empty slot at the end
-    swap( individuals[i], individuals.back() );
-    // and then remove from the end, since we have O(1) there (and no constraints on the order)
-    individuals.pop_back();
-  }
+
 
 public:
 
   template<typename Init>
   explicit population( uint size,
                        Init init = Init(),
-                       bool st = true,
                        double pc = 0.9,
                        double pm = 0.05 )
-    : individuals( size ), gen( 12345678 ), pmutation( pm ),
-      pcrossover( pc ), stationary( st ), age( 0 ), explored( size )
+    : __generator( 12345678 ), __mutation_probability( pm ),
+      __crossover_probability( pc ), __age( 0 ), __explored( size )
   {
-    for (uint i = 0; i < individuals.size(); ++i) {
-      individuals[i].individual = new I;
-      init( *individuals[i].individual, gen );
+    __individuals.reserve( size );
+
+    for (uint i = 0; i < size; ++i) {
+      I newone;
+      init( newone, __generator );
+      __individuals.push_back( triple(newone, true) );
     }
   }
 
   ~population( ) {
-    for (uint i = 0; i < individuals.size(); ++i)
-      delete individuals[i].individual;
   }
 
-  uint size() {
-    return individuals.size();
+  uint size() const {
+    return __individuals.size();
   }
 
-  uint get_age() {
-    return age;
+  uint age() const {
+    return __age;
   }
 
-  I& get_best ( ) const {
-    return *individuals[0].individual;
+  uint explored() const {
+    return __explored;
   }
 
-  ValueType get_best_value ( ) const {
-    return individuals[0].fitness;
+  I& best ( ) const {
+    return __individuals[0].individual;
+  }
+
+  ValueType best_value ( ) const {
+    return __individuals[0].fitness;
   }
 
 
@@ -104,59 +109,65 @@ public:
       genetic_operators( mutate, crossover );
 
       // this execute the (probabilistic) selection step
-      selection( fitness, generation, age);
-      ++age;
+      selection( fitness, generation, __age);
+      ++__age;
     }
   }
 
   template<typename M, typename C>
   void genetic_operators( M mutate, C crossover ) {
-    uint lastSize = individuals.size();
+    uint lastSize = __individuals.size();
 
     // important: the size increases during execution, so we have to stop
     // when we finish the OLD (current) population
     for ( uint j = 0; j < lastSize; ++j ) {
-      if ( gen.real() < pmutation ) {
-        // creates a copy (in our case with a new, empty, tape)
-        I* newone = new I( *individuals[j].individual );
+      if ( __generator.real() < __mutation_probability ) {
+        // creates a copy
+        I newone( __individuals[j].individual );
         // executes mutation on the NEW copy and push it to the end
-        mutate( *newone, gen );
-        individuals.push_back( triple( newone, true ) );
-        explored++;
+        mutate( newone, __generator );
+        __individuals.push_back( triple( newone, true ) );
+        __explored++;
       }
 
-      if ( gen.real() < pcrossover ) {
-        uint partner_id;
+      if ( __generator.real() < __crossover_probability ) {
+        uint partner;
         do {
-          partner_id = gen.integer() % size();
-        } while (partner_id == j);
+          partner = __generator.integer() % size();
+        } while (partner == j);
 
-	I* newone = new I( *individuals[j].individual );
-	I* newtwo = new I( *individuals[partner_id].individual );
-	crossover( *newone, *newtwo, gen );
-	individuals.push_back( triple( newone, true ) );
-	individuals.push_back( triple( newtwo, true ) );
+	I newone( __individuals[j].individual );
+	I newtwo( __individuals[partner].individual );
+	crossover( newone, newtwo, __generator );
+	__individuals.push_back( triple( newone, true ) );
+	__individuals.push_back( triple( newtwo, true ) );
 
-        explored += 2;
+        __explored += 2;
       }
     }
+  }
+
+  void erase( const uint i ) {
+    swap( __individuals[i], __individuals.back() );
+    // and then remove from the end, since we have O(1) there (and no constraints on the order)
+    __individuals.pop_back();
   }
 
   template<typename F, typename G>
   void selection ( F fitness, G generation, uint generationNumber ) {
 
-    // run Turing machines if needed
-    for (uint j = 0; j < individuals.size(); ++j) {
-      generation( *individuals[j].individual, generationNumber );
+    // executes the fitness if needed
+    for (uint j = 0; j < __individuals.size(); ++j) {
+      generation( __individuals[j].individual, generationNumber );
 
       // if needed, call the fitness and store the result
-      if ( individuals[j].changed || !stationary ) {
-        individuals[j].fitness = fitness( *individuals[j].individual );
-        individuals[j].changed = false;
+      if ( __individuals[j].changed ) {
+        __individuals[j].fitness = fitness( __individuals[j].individual );
+        __individuals[j].changed = false;
       }
     }
 
-    sort( individuals.begin(), individuals.end() );
+    sort( __individuals.begin(), __individuals.end() );
 
     // Here we have to be careful.. There was some very subdle errors.
     // The idea is: iterate over every individual and if it has to die, delete it.
@@ -171,24 +182,17 @@ public:
     //       while we still get the value of sigmoid(i). I verified this printing the population
     //       size, that was bigger than expected.
     //
-    //for (uint i = 0; i < individuals.size(); ) {
-    //  if (early_death(i)) erase(i);
-    //  else  ++i;
-    //}
-    //
     // I think that the quicker way to implement this is to simply begin the scan from the back.
     // In this case the order of the individuals that still has to be decided, is preserved.
 
-    // some individuals die in an accident :
-
-    if ( individuals.size() < maximumPopulation ) return;
+    if ( size() < __maximum_opulation ) return;
 
     int safe = 100;
-    int nonSafe = individuals.size() - safe;
-    double threshold = double( individuals.size() - maximumPopulation ) / nonSafe;
+    int nonSafe = size() - safe;
+    double threshold = double( size() - __maximum_opulation ) / nonSafe;
 
-    for (int i = individuals.size()-1; i >= safe; --i) {
-      if ( gen.real() < threshold ) erase(i);
+    for (int i = size() - 1; i >= safe; --i) {
+        if ( __generator.real() < threshold ) erase(i);
     }
   }
 
@@ -196,7 +200,7 @@ public:
     //for ( uint i = 0; i < o.particles.size(); ++i )
     //    os << o.particles[i] << endl;
 
-    os << "best value found: " << o.get_best_value();
+    os << "best value found: " << o.best_value();
     //os << " at " << o.get_best();
     return os;
   }

@@ -35,18 +35,27 @@ struct MyMutation {
 };
 
 int main() {
-  cout << sizeof( short int ) << endl;
-
   population<V> ec( 100, MyInit );
   ec.run( 5000, ackley<V, S, dim>, MyMutation<V,dim>( 1.0 ), MyCrossover() );
   cout << "EC result:\n  " << ec << endl;
 
   // dim = 20
-  // ~11.85s
-  // ~3,698,894 allocs
+  // ~11.85 s
+  // 3,698,894 allocs
 
-  // dim = 1000
-  // ~11.85s
+  // dim = 100
+  // ~27 s
+  // ~same allocs
+
+
+  // without pointers
+
+  // dim = 20
+  // ~6 s
+  // 5 allocs
+
+  // dim = 100
+  // ~31 s
   // ~same allocs
 
   return 0;

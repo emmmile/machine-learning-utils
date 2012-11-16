@@ -41,27 +41,28 @@ template<class SwarmType,
          class ValueType,
          uint M>
 class particle {
-  SwarmType position;
-  VelocityType velocity;
-  SwarmType pbest;		// personal best position
-  ValueType value;		// personal best value
+  SwarmType __position;
+  VelocityType __velocity;
+  SwarmType __personal_best;		// personal best position
+  ValueType __personal_best_value;		// personal best value
 
-  array<particle*, M> neighbours;
+  array<particle*, M> __neighbours;
+
 public:
   particle ( ) {
   }
 
   template<typename Iterator>
   void set ( const SwarmType& p, const VelocityType& v, Iterator beg, Iterator end ) {
-    this->position = p;
-    this->velocity = v;
-    this->pbest = p;
-    for( Iterator i = beg; i != end; ++i ) neighbours[i-beg] = *i;
+    this->__position = p;
+    this->__velocity = v;
+    this->__personal_best = p;
+    for( Iterator i = beg; i != end; ++i ) __neighbours[i-beg] = *i;
   }
 
   template<typename F>
   void initialize ( F function ) {
-    this->value = function( this->position );
+    this->__personal_best_value = function( this->__position );
   }
 
   // NOTE. This is extremely interesting. In a minimization problem I erroneusly set max_element, instead of
@@ -75,55 +76,54 @@ public:
   void move ( F function, double costriction, double phi1, double phi2, Random& gen ) {
     // this maybe can be something else, i.e. it's not straightforward that a difference
     // between two S is again something meaningful in that space (think at turing machines).
-    VelocityType cognitive = pbest - this->position;
-    VelocityType social = (*min_element( neighbours.begin(), neighbours.end(), cmp_ptr ))->pbest - this->position;
+    VelocityType cognitive = __personal_best - this->__position;
+    VelocityType social = ( *min_element( __neighbours.begin(), __neighbours.end(), __cmp ) )->__personal_best - this->__position;
 
     RandomStretch<VelocityType, N> stretch;
     stretch( cognitive, phi1, gen );
     stretch( social,    phi2, gen );
 
-    this->velocity = ( costriction * ( this->velocity + cognitive + social ) );
+    this->__velocity = ( costriction * ( this->__velocity + cognitive + social ) );
     // EXPERIMENTAL, sometimes I mutate the velocity to avoid getting stuck somewhere
     //SwarmMutation<VelocityType, N> mutation;
-    //if ( gen.real() < 0.005 ) mutation( this->velocity, 10.0 / costriction, gen );
+    //if ( gen.real() < 0.05 ) mutation( this->__velocity, 10.0 / costriction, gen );
 
     // adds the velocity to the current position
-    this->position += this->velocity;
+    this->__position += this->__velocity;
     
     // calculates the new value of the function
-    ValueType current = function( this->position );
-    if ( current < value ) {
-      pbest = this->position;
-      value = current;
+    ValueType current = function( this->__position );
+    if ( current < __personal_best_value ) {
+      __personal_best = this->__position;
+      __personal_best_value = current;
     }
   }
 
-  SwarmType get_position ( ) const {
-    return position;
+  SwarmType position ( ) const {
+    return __position;
   }
 
-  ValueType get_best_value( ) const {
-    return value;
+  ValueType best_value( ) const {
+    return __personal_best_value;
   }
 
-  SwarmType get_best ( ) const {
-    return pbest;
+  SwarmType best ( ) const {
+    return __personal_best;
   }
-
 
   bool operator< ( const particle& a ) const {
-    return value < a.value;
+    return __personal_best_value < a.__personal_best_value;
   }
 
-  static bool cmp_ptr ( const particle* a, const particle* b ) {
-    return *a < *b;
+  static bool __cmp ( const particle* a, const particle* b ) {
+    return a->__personal_best_value < b->__personal_best_value;
   }
 
   friend ostream& operator<< ( ostream & os, const particle& p ) {
     //os << "position: " << p.position << endl;
     //os << "velocity:" << p.velocity << endl;
     //os << "personal best: " << p.pbest << endl;
-    os << "personal best value: " << p.value;
+    os << "personal best value: " << p.__personal_best_value;
     return os;
   }
 };

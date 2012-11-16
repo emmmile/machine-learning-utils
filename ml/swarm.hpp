@@ -26,25 +26,26 @@ template<class SwarmType,
 class swarm {
   typedef particle<SwarmType, N, VelocityType, ValueType, M> particleType;
 
-  Random gen;
-  vector<particleType> particles;
+  Random __generator;
+  vector<particleType> __particles;
+  uint __explored;
 public:
 
   template<typename I>
   explicit swarm ( uint size,
                    I init = I() )
-    : gen( 12345678 ), particles( size )
+    : __generator( 12345678 ), __particles( size ), __explored( 0 )
   {
-    for ( uint i = 0; i < particles.size(); ++i ) {
+    for ( uint i = 0; i < __particles.size(); ++i ) {
       SwarmType p;
       VelocityType v;
-      init( p, gen );
+      init( p, __generator );
 
       array<particleType*, M> ring;
-      ring[0] = &particles[(i - 1 + particles.size() ) % particles.size()];
-      ring[1] = &particles[(i + 1 + particles.size() ) % particles.size()];
+      ring[0] = &__particles[(i - 1 + __particles.size() ) % __particles.size()];
+      ring[1] = &__particles[(i + 1 + __particles.size() ) % __particles.size()];
 
-      particles[i].set( p, v, ring.begin(), ring.end() );
+      __particles[i].set( p, v, ring.begin(), ring.end() );
     }
   }
 
@@ -54,28 +55,32 @@ public:
     double costriction = 2.0 / ( phi - 2.0 + sqrt( phi * phi - 4.0 * phi ) );
     //costriction *= 1.2;	// this is good for ackley-100, maybe because increases the convergence time
 
-    for ( uint i = 0; i < particles.size(); ++i )
-      particles[i].initialize( function );
+    for ( uint i = 0; i < __particles.size(); ++i, ++__explored )
+      __particles[i].initialize( function );
 
     for ( uint j = 0; j < iterations; ++j ) {
-      for ( uint i = 0; i < particles.size(); ++i )
-        particles[i].move( function, costriction, phi1, phi2, gen );
+      for ( uint i = 0; i < __particles.size(); ++i, ++__explored )
+        __particles[i].move( function, costriction, phi1, phi2, __generator );
     }
   }
 
-  SwarmType get_best ( ) const {
-    return min_element( particles.begin(), particles.end() )->get_best();
+  uint explored() const {
+    return __explored;
   }
 
-  ValueType get_best_value ( ) const {
-    return min_element( particles.begin(), particles.end() )->get_best_value();
+  SwarmType best ( ) const {
+    return min_element( __particles.begin(), __particles.end() )->best();
+  }
+
+  ValueType best_value ( ) const {
+    return min_element( __particles.begin(), __particles.end() )->best_value();
   }
 
   friend ostream& operator<< ( ostream & os, const swarm& o ) {
     //for ( uint i = 0; i < o.particles.size(); ++i )
     //    os << o.particles[i] << endl;
 
-    os << "best value found: " << o.get_best_value();
+    os << "best value found: " << o.best_value();
     //os << " at " << o.get_best();
     return os;
   }
