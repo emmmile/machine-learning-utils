@@ -5,6 +5,9 @@
 using namespace std;
 using namespace ml;
 
+template <class T = double, uint N = 2>
+using vect = matrix<N, 1, T>;
+
 #define dim       20        // dimensions of the search space
 typedef double S;           // type of the scalar in the search space
 typedef vect<S, dim> V;     // type of the search space (vectors)
@@ -35,6 +38,9 @@ struct MyMutation {
 };
 
 int main() {
+  vect<double, 2> t = { 2, 1 };
+  cout << t << endl;
+
   swarm<V, dim> pso( 30, MyInit );
   pso.run( 2000, ackley<V, S, dim> );
   cout << "PSO result:\n  " << pso << "\n  "
