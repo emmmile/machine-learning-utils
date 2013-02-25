@@ -5,12 +5,10 @@
 using namespace std;
 using namespace ml;
 
-template <class T = double, uint N = 2>
-using vect = matrix<N, 1, T>;
 
 #define dim       20        // dimensions of the search space
 typedef double S;           // type of the scalar in the search space
-typedef vect<S, dim> V;     // type of the search space (vectors)
+typedef vect<dim, S> V;     // type of the search space (vectors)
 
 // define the initialization concept as a function
 inline void MyInit( V& v, Random& gen ) {
@@ -38,8 +36,10 @@ struct MyMutation {
 };
 
 int main() {
-  vect<double, 2> t = { 2, 1 };
-  cout << t << endl;
+  matrix<4,1> t = {1,2,3,4};
+  matrix<1,4> s = {1,0,0,1};
+  cout << double(s * t) << endl;
+  cout << s * t << endl;
 
   swarm<V, dim> pso( 30, MyInit );
   pso.run( 2000, ackley<V, S, dim> );
