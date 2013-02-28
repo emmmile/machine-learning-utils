@@ -2,8 +2,10 @@
 #include "swarm.hpp"
 #include "population.hpp"
 #include "ackley.hpp"
+#include "vect.hpp"
 using namespace std;
 using namespace ml;
+using namespace math;
 
 
 

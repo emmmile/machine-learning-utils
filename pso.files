@@ -2,10 +2,11 @@
 ./test/main.cpp
 ./ml/particle.hpp
 ./pso.pro
-./ml/random/random.hpp
-./test/vect.hpp
+./math/random.hpp
+./math/vect.hpp
 ./ml/concepts.hpp
 Sconstruct
 ml/swarm.hpp
 ml/population.hpp
 test/benchmark.cpp
+math/main.cpp

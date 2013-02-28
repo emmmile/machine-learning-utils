@@ -2,6 +2,7 @@
 #include "swarm.hpp"
 #include "population.hpp"
 #include "ackley.hpp"
+#include "vect.hpp"
 using namespace std;
 using namespace ml;
 
@@ -36,11 +37,6 @@ struct MyMutation {
 };
 
 int main() {
-  matrix<4,1> t = {1,2,3,4};
-  matrix<1,4> s = {1,0,0,1};
-  cout << 7 * (s * t) << endl;
-  cout << 7 * (s * t).scalar() << endl;
-
   swarm<V, dim> pso( 30, MyInit );
   pso.run( 2000, ackley<V, S, dim> );
   cout << "PSO result:\n  " << pso << "\n  "

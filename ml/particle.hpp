@@ -1,7 +1,6 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
-#include "vect.hpp"
 #include "random.hpp"
 #include "concepts.hpp"
 #include <iostream>
@@ -90,7 +89,7 @@ public:
 
     // adds the velocity to the current position
     this->__position += this->__velocity;
-    
+
     // calculates the new value of the function
     ValueType current = function( this->__position );
     if ( current < __personal_best_value ) {

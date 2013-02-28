@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <algorithm>
-#include "vect.hpp"
 #include "particle.hpp"
 #include "concepts.hpp"
 #include <iomanip>

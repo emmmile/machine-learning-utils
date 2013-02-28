@@ -6,7 +6,7 @@ env = Environment(
     '-std=c++0x', '-pipe', '-Wno-deprecated', '-msse2', '-mfpmath=sse', '-fomit-frame-pointer'
   ],
 
-  CPPPATH=['./ml','./ml/random', './test'],
+  CPPPATH=['./ml','./math', './test'],
   LIBS=[],
   LIBPATH=[],
   CPPDEFINES=[],
