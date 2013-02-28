@@ -1,6 +1,9 @@
 #ifndef CONCEPTS_HPP
 #define CONCEPTS_HPP
 #include <sys/types.h>
+#include "random.hpp"
+using namespace math;
+
 namespace ml {
 
 template<class S>
