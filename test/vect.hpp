@@ -119,8 +119,9 @@ public:
   }
 
   // scalar conversion, in case of 1x1 matrices, for example if I want the inner product
-  operator T ( ) const {
-    static_assert( N == 1 && M == 1, "scalar conversion on a matrix bigger than 1x1" );
+  //operator T ( ) const {
+  T scalar ( ) const {
+	  static_assert( N == 1 && M == 1, "scalar conversion on a matrix bigger than 1x1" );
     return values[0];
   }
 
@@ -141,6 +142,7 @@ public:
     return os << "]";
   }
 };
+
 
 // I love C++11
 template<size_t N, size_t M, class T = double>

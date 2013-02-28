@@ -38,8 +38,8 @@ struct MyMutation {
 int main() {
   matrix<4,1> t = {1,2,3,4};
   matrix<1,4> s = {1,0,0,1};
-  cout << double(s * t) << endl;
-  cout << s * t << endl;
+  cout << 7 * (s * t) << endl;
+  cout << 7 * (s * t).scalar() << endl;
 
   swarm<V, dim> pso( 30, MyInit );
   pso.run( 2000, ackley<V, S, dim> );
