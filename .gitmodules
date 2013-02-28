@@ -1,3 +1,3 @@
-[submodule "ml/random"]
-	path = ml/random
-	url = git@github.com:emmmile/random.git
+[submodule "math"]
+	path = math
+	url = git@bitbucket.org/emmmile/math.git
