@@ -10,3 +10,5 @@ ml/swarm.hpp
 ml/population.hpp
 test/benchmark.cpp
 math/main.cpp
+ml/neural_layer.hpp
+ml/ann.hpp

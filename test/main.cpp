@@ -2,6 +2,7 @@
 #include "swarm.hpp"
 #include "population.hpp"
 #include "ackley.hpp"
+#include "ann.hpp"
 #include "vect.hpp"
 using namespace std;
 using namespace ml;
@@ -36,15 +37,26 @@ struct MyMutation {
   }
 };
 
+
+
 int main() {
+  vect<2> in  [4] = { {0,0}, {0,1}, {1,0}, {1,1} };
+  vect<1> out [4] = { {0},   {1},   {1},   {0}   };
+
+  ann<2,2,1> neural;
+  neural.train( in, in + 4, out, out + 4, 200 );
+  cout << "XOR Neural nework result:\n";
+  for ( int i = 0; i < 4; ++i )
+    cout << "  " << neural.compute( in[i] ) << "\t(" << out[i] << ")\n";
+
   swarm<V, dim> pso( 30, MyInit );
   pso.run( 2000, ackley<V, S, dim> );
-  cout << "PSO result:\n  " << pso << "\n  "
+  cout << "\nPSO result:\n  " << pso << "\n  "
        << "function evaluations:  " << pso.explored() << endl;
 
   population<V> ec( 100, MyInit );
   ec.run( 500, ackley<V, S, dim>, MyMutation<V,dim>( 1.0 ), MyCrossover() );
-  cout << "EC result:\n  " << ec << "\n  "
+  cout << "\nEC result:\n  " << ec << "\n  "
        << "function evaluations:  " << ec.explored() << endl;
 
   return 0;
