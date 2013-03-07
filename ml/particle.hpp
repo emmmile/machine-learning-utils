@@ -10,8 +10,9 @@ namespace ml {
 
 
 // The basic particle step in the swarm. Here we loose of generality
-// in the sense S must have operators compatible with a vector space
-// (e.g. taking the i-th element with [] and multiplying it by a double).
+// in the sense S (that will be SwarmType) must have operators compatible
+// with a vector space (e.g. taking the i-th element with [] and
+// multiplying it by a double).
 template<class S, unsigned int N>
 class RandomStretch : public Mutation<S> {
 public:
@@ -34,15 +35,11 @@ public:
 
 
 
-template<class SwarmType,
-         uint N,
-         class VelocityType,
-         class ValueType,
-         uint M>
+template<class SwarmType, size_t N, class VelocityType, class ValueType, size_t M>
 class particle {
   SwarmType __position;
   VelocityType __velocity;
-  SwarmType __personal_best;		// personal best position
+  SwarmType __personal_best;          // personal best position
   ValueType __personal_best_value;		// personal best value
 
   array<particle*, M> __neighbours;
@@ -53,9 +50,9 @@ public:
 
   template<typename Iterator>
   void set ( const SwarmType& p, const VelocityType& v, Iterator beg, Iterator end ) {
-    this->__position = p;
-    this->__velocity = v;
-    this->__personal_best = p;
+    __position = p;
+    __velocity = v;
+    __personal_best = p;
     for( Iterator i = beg; i != end; ++i ) __neighbours[i-beg] = *i;
   }
 
@@ -70,7 +67,6 @@ public:
   // XXX review but I think this parameters should be double. I cannot be aware of the type of the vector
   // or its components, must be something generic. And since we are dealing with probabilities I think the must
   // be double.
-  // TODO generalize this
   template<typename F>
   void move ( F function, double costriction, double phi1, double phi2, Random& gen ) {
     // this maybe can be something else, i.e. it's not straightforward that a difference
@@ -98,15 +94,15 @@ public:
     }
   }
 
-  SwarmType position ( ) const {
+  const SwarmType& position ( ) const {
     return __position;
   }
 
-  ValueType best_value( ) const {
+  const ValueType& best_value( ) const {
     return __personal_best_value;
   }
 
-  SwarmType best ( ) const {
+  const SwarmType& best ( ) const {
     return __personal_best;
   }
 

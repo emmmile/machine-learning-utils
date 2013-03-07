@@ -61,7 +61,7 @@ public:
                        Init init = Init(),
                        double pc = 0.9,
                        double pm = 0.05 )
-    : __generator( 12345678 ), __mutation_probability( pm ),
+    : __generator( time(0) ), __mutation_probability( pm ),
       __crossover_probability( pc ), __age( 0 ), __explored( size )
   {
     __individuals.reserve( size );
@@ -136,11 +136,11 @@ public:
           partner = __generator.integer() % size();
         } while (partner == j);
 
-	I newone( __individuals[j].individual );
-	I newtwo( __individuals[partner].individual );
-	crossover( newone, newtwo, __generator );
-	__individuals.push_back( triple( newone, true ) );
-	__individuals.push_back( triple( newtwo, true ) );
+  I newone( __individuals[j].individual );
+  I newtwo( __individuals[partner].individual );
+  crossover( newone, newtwo, __generator );
+  __individuals.push_back( triple( newone, true ) );
+  __individuals.push_back( triple( newtwo, true ) );
 
         __explored += 2;
       }

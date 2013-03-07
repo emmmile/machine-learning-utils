@@ -21,8 +21,9 @@ class neural_layer {
   static constexpr double eta = 1.0;
 
   inline static double sigmoid( const double& value, const double lambda = 1.0 ) {
-      double k = exp( lambda * value );
-      return k / ( 1.0 + k );
+      //double k = exp( lambda * value );
+      //return k / ( 1.0 + k );
+    return 1.0 / ( 1.0 + exp( -lambda * value ) );
   }
 
   inline outType computedelta ( const outType& v ) {
@@ -38,11 +39,7 @@ class neural_layer {
   }
 
 public:
-  neural_layer ( T* data, Random& gen ) : __weights( data ) {
-    // initialization to small, zero-centered weights
-    for ( size_t i = 0; i < N; ++i )
-      for ( size_t j = 0; j < I + 1; ++j )
-        __weights(i,j) = 0.1 * gen.realnegative();
+  neural_layer ( T* data ) : __weights( data ) {
   }
 
   inline static constexpr size_t size ( ) {
@@ -74,11 +71,11 @@ public:
     inType out;
 
     // update the weights, the delta rule
-    cout << "error = " << error << endl;
-    cout << "delta = " << delta << endl;
+    //cout << "error = " << error << endl;
+    //cout << "delta = " << delta << endl;
     __weights += eta * delta * __input.transpose();
-    cout << __weights << endl;
-    getchar();
+    //cout << __weights << endl;
+    //getchar();
 
     // compute the deltas for the previous layer
     if ( !first ) {
