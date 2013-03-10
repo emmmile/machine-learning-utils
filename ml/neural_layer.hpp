@@ -6,7 +6,10 @@
 using namespace std;
 using namespace math;
 
-template<size_t N, size_t I, class T = double>
+
+enum activation { LINEAR, SIGMOID };
+
+template<size_t N, size_t I, activation A, class T = double>
 class neural_layer {
   typedef shared_matrix<N, I + 1, T> weightsType;
   typedef vect<N, T> outType;
@@ -18,7 +21,7 @@ class neural_layer {
   richInType  __input;    // last input
 
 
-  static constexpr double eta = 0.8;
+  static constexpr double eta = 1.0;
 
   inline static double sigmoid( const double& value, const double lambda = 1.0 ) {
     return 1.0 / ( 1.0 + exp( -lambda * value ) );
@@ -33,7 +36,13 @@ class neural_layer {
 
   // the activation is component-wise too
   inline outType& activation ( const outType& net ) {
-    for ( size_t i = 0; i < N; ++i ) __output[i] = sigmoid( net[i] );
+    for ( size_t i = 0; i < N; ++i ) {
+      if ( A == SIGMOID )
+        __output[i] = sigmoid( net[i] );
+      if ( A == LINEAR )
+        __output[i] = net[i];
+    }
+
     return __output;
   }
 

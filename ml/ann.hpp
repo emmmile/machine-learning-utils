@@ -5,16 +5,20 @@
 #include <boost/progress.hpp>
 using namespace boost;
 
-template<size_t I, size_t H, size_t O, class T = double>
+
+template<size_t I, size_t H, size_t O, activation A = SIGMOID, class T = double>
 class ann {
+  typedef neural_layer<H,I,SIGMOID,T> firstLayer;
+  typedef neural_layer<O,H,A,T> secondLayer;
+
   Random __generator;
   size_t __evaluations;
-  vect<neural_layer<H,I,T>::size() + neural_layer<O,H,T>::size()> __weights;
-  neural_layer<H,I,T> __first;
-  neural_layer<O,H,T> __second;
+  vect<firstLayer::size() + secondLayer::size()> __weights;
+  firstLayer __first;
+  secondLayer __second;
 
 public:
-  typedef vect<neural_layer<H,I,T>::size() + neural_layer<O,H,T>::size()> vector_type;
+  typedef vect<firstLayer::size() + secondLayer::size()> vector_type;
   typedef vect<I, T> inputType;
   typedef vect<O, T> outputType;
   typedef vect<H, T> hiddenType;
@@ -24,7 +28,7 @@ public:
     __generator( seed ),
     __evaluations( 0 ),
     __first( __weights.data() ),
-    __second( __weights.data() + neural_layer<H,I,T>::size() ) {
+    __second( __weights.data() + secondLayer::size() ) {
 
     init( __generator );
   }
@@ -74,7 +78,7 @@ public:
   }
 
   static constexpr size_t size ( ) {
-    return neural_layer<H,I,T>::size() + neural_layer<O,H,T>::size();
+    return firstLayer::size() + secondLayer::size();
   }
 
   const size_t evaluations ( ) const {
