@@ -14,43 +14,38 @@ class neural_layer {
   typedef vect<I + 1, T> richInType;
 
   weightsType __weights;
-  outType __output;  // last output
-  richInType __input; // last input
+  outType     __output;   // last output
+  richInType  __input;    // last input
 
 
-  static constexpr double eta = 1.0;
+  static constexpr double eta = 0.8;
 
   inline static double sigmoid( const double& value, const double lambda = 1.0 ) {
-      //double k = exp( lambda * value );
-      //return k / ( 1.0 + k );
     return 1.0 / ( 1.0 + exp( -lambda * value ) );
   }
 
-  inline outType computedelta ( const outType& v ) {
-    outType d;
+  // compute the component-wise delta calculation (in-place)
+  inline outType& computedelta ( outType& v ) {
     for ( size_t k = 0; k < N; ++k )
-      d[k] = v[k] * (1.0 - __output[k]) * __output[k];
-    return d;
+      v[k] = v[k] * (1.0 - __output[k]) * __output[k];
+    return v;
   }
 
+  // the activation is component-wise too
   inline outType& activation ( const outType& net ) {
     for ( size_t i = 0; i < N; ++i ) __output[i] = sigmoid( net[i] );
     return __output;
   }
 
+  // add the fictitious input and save it in the member variable
+  const richInType& setInput( const inType& input ) {
+    __input[I] = -1.0;
+    copy( input.data(), input.data() + I, __input.data() );
+    return __input;
+  }
+
 public:
   neural_layer ( T* data ) : __weights( data ) {
-  }
-
-  inline static constexpr size_t size ( ) {
-    return N * (I + 1);
-  }
-
-  inline static richInType addFictitiusInput( const inType& input ) {
-    richInType richinput;
-    richinput[I] = -1.0;
-    copy( input.data(), input.data() + I, richinput.data() );
-    return richinput;
   }
 
   // compute the output of the network given an input
@@ -61,21 +56,17 @@ public:
     //   - split the multiplication as follows:
     //     out = -W0 + W*in
     // i choose to copy the input, it's O(n) instead of O(n^2)
-    __input = addFictitiusInput( input );
+    setInput( input );
 
     return activation( __weights * __input );
   }
 
-  inType backprop ( const outType& error, bool first = false ) {
+  inType backprop ( outType& error, bool first = false ) {
     outType delta = computedelta( error );
     inType out;
 
     // update the weights, the delta rule
-    //cout << "error = " << error << endl;
-    //cout << "delta = " << delta << endl;
     __weights += eta * delta * __input.transpose();
-    //cout << __weights << endl;
-    //getchar();
 
     // compute the deltas for the previous layer
     if ( !first ) {
@@ -92,6 +83,10 @@ public:
 
   const outType& output() const {
     return __output;
+  }
+
+  inline static constexpr size_t size ( ) {
+    return N * (I + 1);
   }
 
   friend ostream& operator<< ( ostream & os, const neural_layer& l ) {

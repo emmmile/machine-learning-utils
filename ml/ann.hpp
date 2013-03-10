@@ -43,8 +43,9 @@ public:
   }
 
   void backprop ( const outputType& target ) {
-    hiddenType delta = __second.backprop( target - __second.output() );
-    __first.backprop( delta, true );
+    outputType hodelta = target - __second.output();
+    hiddenType ihdelta = __second.backprop( hodelta );
+    __first.backprop( ihdelta, true );
   }
 
   template <typename InputIter, typename OutputIter>
@@ -79,6 +80,9 @@ public:
   const size_t evaluations ( ) const {
     return __evaluations;
   }
+
+
+
 
   // for pso
   vector_type operator- ( const ann& another ) const {
