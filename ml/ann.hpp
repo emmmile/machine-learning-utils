@@ -28,7 +28,7 @@ public:
     __generator( seed ),
     __evaluations( 0 ),
     __first( __weights.data() ),
-    __second( __weights.data() + secondLayer::size() ) {
+    __second( __weights.data() + firstLayer::size() ) {
 
     init( __generator );
   }
@@ -57,12 +57,15 @@ public:
                const size_t patterns, const size_t epochs ) {
 
     for ( size_t e = 0; e < epochs; ++e ) {
+      //cout << error( inputs, targets, patterns ) << endl;
+
       for ( size_t i = 0; i < patterns; ++i ) {
         compute( inputs[i] );
         backprop( targets[i] );
       }
 
-      //cout << "epoch " << e << endl;
+      //cout << error( inputs, targets, patterns ) << endl;
+      //getchar();
     }
   }
 

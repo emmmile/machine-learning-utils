@@ -3,6 +3,7 @@
 
 #include "vect.hpp"
 #include <iostream>
+#include <cmath>
 using namespace std;
 using namespace math;
 
@@ -20,17 +21,17 @@ class neural_layer {
   outType     __output;   // last output
   richInType  __input;    // last input
 
-
-  static constexpr double eta = 1.0;
-
   inline static double sigmoid( const double& value, const double lambda = 1.0 ) {
     return 1.0 / ( 1.0 + exp( -lambda * value ) );
   }
 
   // compute the component-wise delta calculation (in-place)
-  inline outType& computedelta ( outType& v ) {
-    for ( size_t k = 0; k < N; ++k )
-      v[k] = v[k] * (1.0 - __output[k]) * __output[k];
+  inline outType computedelta ( outType& v ) {
+    for ( size_t k = 0; k < N; ++k ) {
+      if ( A == SIGMOID )
+        v[k] = v[k] * (1.0 - __output[k]) * __output[k];
+    }
+
     return v;
   }
 
@@ -50,6 +51,7 @@ class neural_layer {
   const richInType& setInput( const inType& input ) {
     __input[I] = -1.0;
     copy( input.data(), input.data() + I, __input.data() );
+
     return __input;
   }
 
@@ -70,7 +72,8 @@ public:
     return activation( __weights * __input );
   }
 
-  inType backprop ( outType& error, bool first = false ) {
+  inType backprop ( outType& error, bool first = false,
+                    const double eta = (A == LINEAR) ? 0.05 : 0.8 ) {
     outType delta = computedelta( error );
     inType out;
 

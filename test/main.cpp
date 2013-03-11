@@ -86,7 +86,7 @@ int main() {
   cout << "  network evaluations: " << neural.evaluations() << endl;
 
   swarm<xorann, xorann::size(), xorann::vector_type> neural_pso( 20, annInit<xorann> );
-  neural_pso.run( 2000, error );
+  neural_pso.run( 500, error );
   cout << "\nPSO, XOR neural network training:\n";
   error.show( neural_pso.best() );
   cout << "  network evaluations: " << neural_pso.best().evaluations() * 20 << endl;
