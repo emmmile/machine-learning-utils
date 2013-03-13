@@ -13,7 +13,7 @@ class ann_base {
 
   Random __generator;
   size_t __evaluations;
-  vect<firstLayer::size() + secondLayer::size()> __weights;
+	vect<firstLayer::size() + secondLayer::size(), T> __weights;
   firstLayer __first;
   secondLayer __second;
 
@@ -98,7 +98,7 @@ class ann : public ann_base<I,H,O,A,L,T> { };
 
 
 
-template<size_t I, size_t H, size_t O, activation A, class T>
+/*template<size_t I, size_t H, size_t O, activation A, class T>
 class ann<I,H,O,A,BATCH,T> : public ann_base<I,H,O,A,BATCH,T> {
 	typedef ann_base<I,H,O,A,BATCH,T> base;
 	vect<base::size()> __dw;
@@ -106,6 +106,6 @@ public:
 	ann ( ) : base( ) {
 		cout << "Using template specialization.\n";
 	}
-};
+};*/
 
 #endif // ANN_HPP
