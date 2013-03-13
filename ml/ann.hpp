@@ -6,10 +6,10 @@
 using namespace boost;
 
 
-template<size_t I, size_t H, size_t O, activation A = SIGMOID, class T = double>
-class ann {
-  typedef neural_layer<H,I,SIGMOID,T> firstLayer;
-  typedef neural_layer<O,H,A,T> secondLayer;
+template<size_t I, size_t H, size_t O, activation A, learning L, class T>
+class ann_base {
+	typedef neural_layer<H,I,SIGMOID,L,T> firstLayer;
+	typedef neural_layer<O,H,A,L,T> secondLayer;
 
   Random __generator;
   size_t __evaluations;
@@ -24,7 +24,7 @@ public:
   typedef vect<H, T> hiddenType;
   typedef T scalar;
 
-  ann ( uint32_t seed = time(0) ) :
+	ann_base ( uint32_t seed = time(0) ) :
     __generator( seed ),
     __evaluations( 0 ),
     __first( __weights.data() ),
@@ -33,7 +33,7 @@ public:
     init( __generator );
   }
 
-  ann& init ( Random& another ) {
+	ann_base& init ( Random& another ) {
     // initialization to small, zero-centered weights
     for ( size_t i = 0; i < size(); ++i )
       __weights[i] = 0.5 * another.realnegative();
@@ -87,19 +87,25 @@ public:
   const size_t evaluations ( ) const {
     return __evaluations;
   }
+};
+
+
+
+template<size_t I, size_t H, size_t O, activation A = SIGMOID, learning L = ONLINE, class T = double>
+//using ann = ann_base<I,H,O,A,T>;
+class ann : public ann_base<I,H,O,A,L,T> { };
 
 
 
 
-  // for pso
-  vector_type operator- ( const ann& another ) const {
-    return this->__weights - another.__weights;
-  }
-
-  ann& operator+= ( const vector_type& dw ) {
-    this->__weights += dw;
-    return *this;
-  }
+template<size_t I, size_t H, size_t O, activation A, class T>
+class ann<I,H,O,A,BATCH,T> : public ann_base<I,H,O,A,BATCH,T> {
+	typedef ann_base<I,H,O,A,BATCH,T> base;
+	vect<base::size()> __dw;
+public:
+	ann ( ) : base( ) {
+		cout << "Using template specialization.\n";
+	}
 };
 
 #endif // ANN_HPP

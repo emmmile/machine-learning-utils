@@ -75,6 +75,8 @@ int main() {
   vect<1> out [] = { {0},   {1},   {1},   {0}   };
   typedef ann<2,2,1> xorann;
 
+	ann<4,4,4,SIGMOID,BATCH> asd;
+
   cout.precision( 5 );
   cout << fixed;
 
@@ -85,11 +87,11 @@ int main() {
   error.show( neural );
   cout << "  network evaluations: " << neural.evaluations() << endl;
 
-  swarm<xorann, xorann::size(), xorann::vector_type> neural_pso( 20, annInit<xorann> );
+	/*swarm<xorann, xorann::size(), xorann::vector_type> neural_pso( 20, annInit<xorann> );
   neural_pso.run( 500, error );
   cout << "\nPSO, XOR neural network training:\n";
   error.show( neural_pso.best() );
-  cout << "  network evaluations: " << neural_pso.best().evaluations() * 20 << endl;
+	cout << "  network evaluations: " << neural_pso.best().evaluations() * 20 << endl;*/
 
   swarm<V, dim> pso( 30, MyInit );
   pso.run( 2000, ackley<V, S, dim> );

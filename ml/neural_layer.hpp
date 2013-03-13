@@ -9,8 +9,9 @@ using namespace math;
 
 
 enum activation { LINEAR, SIGMOID };
+enum learning { ONLINE, BATCH };
 
-template<size_t N, size_t I, activation A, class T = double>
+template<size_t N, size_t I, activation A, learning L, class T = double>
 class neural_layer {
   typedef shared_matrix<N, I + 1, T> weightsType;
   typedef vect<N, T> outType;
@@ -56,7 +57,7 @@ class neural_layer {
   }
 
 public:
-  neural_layer ( T* data ) : __weights( data ) {
+	neural_layer ( T* data ) : __weights( data ) {
   }
 
   // compute the output of the network given an input
@@ -101,7 +102,7 @@ public:
     return N * (I + 1);
   }
 
-  friend ostream& operator<< ( ostream & os, const neural_layer& l ) {
+	friend ostream& operator<< ( ostream & os, const neural_layer& l ) {
     //os.precision( 2 );
     return os << "weights in the layer:\n" << l.weights();
   }

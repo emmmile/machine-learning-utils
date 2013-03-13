@@ -2,8 +2,9 @@
 
 env = Environment(
   CCFLAGS = [
-    '-Wall', '-O3', '-ffast-math', '-funroll-loops',
-    '-std=c++0x', '-pipe', '-Wno-deprecated', '-msse2', '-msse3', '-mfpmath=sse', '-fomit-frame-pointer'
+    '-Wall', '-g3', '-std=c++11',
+    #'-ffast-math', '-funroll-loops', '-pipe', '-Wno-deprecated', '-msse2', '-msse3',
+    #'-mfpmath=sse', '-fomit-frame-pointer'
   ],
 
   CPPPATH=['./ml','./math', './test'],
@@ -14,5 +15,5 @@ env = Environment(
 )
 
 
-env.Program( './test/test', './test/main.cpp' )
+env.Program( './test/example', './test/example.cpp' )
 env.Program( './test/benchmark', './test/benchmark.cpp' )

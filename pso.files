@@ -1,5 +1,5 @@
 ./test/ackley.hpp
-./test/main.cpp
+./test/example.cpp
 ./ml/particle.hpp
 ./pso.pro
 ./math/random.hpp
