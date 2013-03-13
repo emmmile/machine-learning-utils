@@ -2,9 +2,12 @@
 #define ANN_HPP
 
 #include "neural_layer.hpp"
+#include "dataset.hpp"
 #include <boost/progress.hpp>
 using namespace boost;
 
+
+namespace ml {
 
 template<size_t I, size_t H, size_t O, activation A, learning L, class T>
 class ann_base {
@@ -54,32 +57,38 @@ public:
     __first.backprop( ihdelta, dwh, true );
   }
 
-  template <typename InputIter, typename OutputIter>
-  void train ( InputIter inputs, OutputIter targets,
-               const size_t patterns, const size_t epochs ) {
+  void train ( const dataset<I,O,T>& set, const size_t epochs ) {
     vector_type dw;
     firstLayerWeights dwh ( dw.data() );
     secondLayerWeights dwo ( dw.data() + firstLayer::size() );
 
     for ( size_t e = 0; e < epochs; ++e ) {
-      dw = vector_type( 0 );
-      for ( size_t i = 0; i < patterns; ++i ) {
-        compute( inputs[i] );
-        backprop( targets[i], dwh, dwo );
+      for ( size_t i = 0; i < set.patterns(); ++i ) {
+        dw = vector_type( 0 );
+        compute( set.input(i) );
+        backprop( set.target(i), dwh, dwo );
+        __weights += dw;
       }
-      __weights += dw;
     }
   }
 
-  template <typename InputIter, typename OutputIter>
-  T error ( InputIter inputs, OutputIter targets, const size_t patterns ) {
+  T error ( const dataset<I,O,T>& set ) {
     T sum = 0;
-    for ( size_t i = 0; i < patterns; ++i ) {
-      auto diff = targets[i] - compute( inputs[i] );
+    for ( size_t i = 0; i < set.patterns(); ++i ) {
+      auto diff = set.target(i) - compute( set.input(i) );
       sum += diff.squaredNorm();
     }
 
-    return sum;
+    return sum / set.patterns();
+  }
+
+  void results ( const dataset<I,O,T>& set ) {
+    for ( size_t i = 0; i < set.patterns(); ++i ) {
+      outputType out = compute( set.input(i) );
+      bool diff = (set.target(i) - out).squaredNorm() > 0.25;
+      cout << out << "\t(" << set.target(i) << ")" << (diff ? " <-" : "") << "\n";
+    }
+      cout << "total error: " << error( set ) << endl;
   }
 
   static constexpr size_t size ( ) {
@@ -109,5 +118,7 @@ public:
     cout << "Using template specialization.\n";
   }
 };*/
+
+} // namespace ml
 
 #endif // ANN_HPP

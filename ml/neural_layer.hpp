@@ -7,6 +7,7 @@
 using namespace std;
 using namespace math;
 
+namespace ml {
 
 enum activation { LINEAR, SIGMOID };
 enum learning { ONLINE, BATCH };
@@ -163,6 +164,6 @@ public:
   }
 };
 
-
+} // namespace ml
 
 #endif // NEURAL_LAYER_HPP

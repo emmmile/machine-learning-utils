@@ -12,3 +12,10 @@ test/benchmark.cpp
 math/main.cpp
 ml/neural_layer.hpp
 ml/ann.hpp
+ml/dataset.hpp
+test/monks/monks-1.train
+test/monks/monks-1.test
+test/monks/monks.cpp
+test/monks/monks-3.train
+test/monks/monks-3.test
+test/monks/monks
