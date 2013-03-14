@@ -46,8 +46,8 @@ public:
 
   template<typename I>
   explicit swarm ( size_t size,
-                   I init = I() )
-    : __generator( time(0) ), __particles( size ), __explored( 0 )
+									 I init = I(), int32_t seed = Random::seed() )
+		: __generator( seed ), __particles( size ), __explored( 0 )
   {
     for ( size_t i = 0; i < __particles.size(); ++i ) {
       SwarmType p;
@@ -84,6 +84,10 @@ public:
   const SwarmType& best ( ) const {
     return min_element( __particles.begin(), __particles.end() )->best();
   }
+
+	SwarmType best ( ) {
+		return min_element( __particles.begin(), __particles.end() )->best();
+	}
 
   const ValueType& best_value ( ) const {
     return min_element( __particles.begin(), __particles.end() )->best_value();

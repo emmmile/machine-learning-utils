@@ -60,8 +60,8 @@ public:
   explicit population( uint size,
                        Init init = Init(),
                        double pc = 0.9,
-                       double pm = 0.05 )
-    : __generator( time(0) ), __mutation_probability( pm ),
+											 double pm = 0.05, int32_t seed = Random::seed() )
+		: __generator( seed ), __mutation_probability( pm ),
       __crossover_probability( pc ), __age( 0 ), __explored( size )
   {
     __individuals.reserve( size );

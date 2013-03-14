@@ -11,6 +11,7 @@ namespace ml {
 
 template<size_t I, size_t H, size_t O, activation A, learning L, class T>
 class ann_base {
+protected:
   typedef neural_layer<H,I,SIGMOID,L,T> firstLayer;
   typedef neural_layer<O,H,A,L,T> secondLayer;
   typedef typename firstLayer::weightsType firstLayerWeights;
@@ -27,21 +28,21 @@ public:
   typedef vect<I, T> inputType;
   typedef vect<O, T> outputType;
   typedef vect<H, T> hiddenType;
-  typedef T scalar;
+	typedef T scalarType;
 
-  ann_base ( uint32_t seed = time(0) ) :
+	ann_base ( uint32_t seed = Random::seed() ) :
     __generator( seed ),
     __evaluations( 0 ),
     __first( __weights.data() ),
     __second( __weights.data() + firstLayer::size() ) {
-
+		//cout << seed << endl;
     init( __generator );
   }
 
   ann_base& init ( Random& another ) {
     // initialization to small, zero-centered weights
     for ( size_t i = 0; i < size(); ++i )
-      __weights[i] = 0.5 * another.realnegative();
+			__weights[i] = 0.5 * another.realnegative();
 
     return *this;
   }
@@ -82,13 +83,17 @@ public:
     return sum / set.patterns();
   }
 
-  void results ( const dataset<I,O,T>& set ) {
+	void results ( const dataset<I,O,T>& set, T threshold = 0.25 * 0.25 ) {
+		size_t errors = 0;
     for ( size_t i = 0; i < set.patterns(); ++i ) {
       outputType out = compute( set.input(i) );
-      bool diff = (set.target(i) - out).squaredNorm() > 0.25;
+			bool diff = (set.target(i) - out).squaredNorm() > threshold;
       cout << out << "\t(" << set.target(i) << ")" << (diff ? " <-" : "") << "\n";
+			if ( diff ) ++errors;
     }
-      cout << "total error: " << error( set ) << endl;
+
+		cout << "total error: " << error( set ) << endl;
+		cout << "wrong patterns: " << errors << " (" << double( 100 * errors ) / set.patterns() << "%)\n";
   }
 
   static constexpr size_t size ( ) {
@@ -98,6 +103,20 @@ public:
   const size_t evaluations ( ) const {
     return __evaluations;
   }
+
+	const vector_type& weights ( ) const {
+		return __weights;
+	}
+
+	// for pso
+	vector_type operator- ( const ann_base& another ) const {
+		return this->__weights - another.__weights;
+	}
+
+	ann_base& operator+= ( const vector_type& dw ) {
+		this->__weights += dw;
+		return *this;
+	}
 };
 
 
@@ -109,15 +128,28 @@ class ann : public ann_base<I,H,O,A,L,T> { };
 
 
 
-/*template<size_t I, size_t H, size_t O, activation A, class T>
+template<size_t I, size_t H, size_t O, activation A, class T>
 class ann<I,H,O,A,BATCH,T> : public ann_base<I,H,O,A,BATCH,T> {
-  typedef ann_base<I,H,O,A,BATCH,T> base;
-  vect<base::size()> __dw;
+	typedef ann_base<I,H,O,A,BATCH,T> base;
 public:
-  ann ( ) : base( ) {
-    cout << "Using template specialization.\n";
-  }
-};*/
+	ann ( uint32_t seed = Random::seed() ) : base( seed ) { }
+
+	void train ( const dataset<I,O,T>& set, const size_t epochs ) {
+		cout << "Using BATCH specialization.\n";
+		typename base::vector_type dw;
+		typename base::firstLayerWeights dwh ( dw.data() );
+		typename base::secondLayerWeights dwo ( dw.data() + base::firstLayer::size() );
+
+		for ( size_t e = 0; e < epochs; ++e ) {
+			dw = typename base::vector_type( 0 );
+			for ( size_t i = 0; i < set.patterns(); ++i ) {
+				this->compute( set.input(i) );
+				this->backprop( set.target(i), dwh, dwo );
+			}
+			this->__weights += dw;
+		}
+	}
+};
 
 } // namespace ml
 

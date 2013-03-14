@@ -19,3 +19,4 @@ test/monks/monks.cpp
 test/monks/monks-3.train
 test/monks/monks-3.test
 test/monks/monks
+ml/neural_pso.hpp

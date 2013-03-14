@@ -4,6 +4,7 @@
 #include "ackley.hpp"
 #include "ann.hpp"
 #include "vect.hpp"
+#include "neural_pso.hpp"
 #include <boost/progress.hpp>
 using namespace std;
 using namespace ml;
@@ -40,59 +41,29 @@ struct MyMutation {
 };
 
 
-/*template<class N>
-class sse {
-public:
-  typedef typename N::inputType inputType;
-  typedef typename N::outputType outputType;
-
-  inputType* inputs;
-  outputType* targets;
-  size_t patterns;
-
-  sse( inputType* i, outputType* t, const size_t p ) :
-    inputs( i ), targets( t ), patterns( p ) {
-  }
-
-  inline S operator() ( N& v ) {
-    return v.error( inputs, targets, patterns );
-  }
-
-  void show ( N v ) {
-    for ( size_t i = 0; i < patterns; ++i )
-      cout << "  " << v.compute( inputs[i] ) << "\t(" << targets[i] << ")\n";
-      cout << "  total error: " << v.error( inputs, targets, patterns ) << endl;
-  }
-};*/
-
-template<class V>
-inline void annInit( V& v, Random& gen ) {
-  v.init( gen );
-}
-
 
 int main() {
   vect<2> in  [] = { {0,0}, {0,1}, {1,0}, {1,1} };
   vect<1> out [] = { {0},   {1},   {1},   {0}   };
   dataset<2,1> set( in, out, 4 );
-  typedef ann<2,2,1,SIGMOID> xorann;
+	typedef ann<2,2,1,SIGMOID,ONLINE> xorann;
 
   cout.precision( 5 );
-  cout << fixed;
+	cout << fixed;
 
-  xorann neural;
+	xorann neural;
   neural.train( set, 4000 );
   cout << "GD, XOR neural nework training:\n";
   neural.results( set );
   cout << "  network evaluations: " << neural.evaluations() << endl;
 
-  /*swarm<xorann, xorann::size(), xorann::vector_type> neural_pso( 20, annInit<xorann> );
-  neural_pso.run( 500, error );
-  cout << "\nPSO, XOR neural network training:\n";
-  error.show( neural_pso.best() );
-  cout << "  network evaluations: " << neural_pso.best().evaluations() * 20 << endl;*/
+	swarm<xorann, xorann::size(), xorann::vector_type> npso( 20, neural_pso_init<xorann> );
+	npso.run( 500, neural_pso<2,1,xorann>( set ) );
+	cout << "\nPSO, XOR neural network training:\n";
+	npso.best().results( set );
+	cout << "  network evaluations: " << npso.best().evaluations() * 20 << endl;
 
-  swarm<V, dim> pso( 30, MyInit );
+	swarm<V, 20> pso( 30, MyInit );
   pso.run( 2000, ackley<V, S, dim> );
   cout << "\nPSO, ackley minimization:\n  " << pso << "\n  "
        << "function evaluations:  " << pso.explored() << endl;
