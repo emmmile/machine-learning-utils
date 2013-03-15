@@ -12,18 +12,18 @@ using namespace ml;
 
 
 int main ( ) {
-	dataset<6,1> train( "monks-1.train" );
-	dataset<6,1> test( "monks-1.test" );
-	typedef ann<6,4,1> monks;
+  dataset<17,1> train( "monks-3.train.converted" );
+  dataset<17,1> test( "monks-3.test.converted" );
+  typedef ann<17,4,1> monks;
 
   cout.precision( 5 );
   cout << fixed;
 
 	monks neural;
-	neural.train( train, 10000 );
+  neural.train( train, 200 );
   neural.results( train );
   getchar();
-	neural.results( test );
+  neural.results( test );
 
 
 	/*swarm<monks, monks::size(), monks::vector_type> npso( 20, neural_pso_init<monks> );
