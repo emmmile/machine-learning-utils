@@ -46,24 +46,24 @@ int main() {
   vect<2> in  [] = { {0,0}, {0,1}, {1,0}, {1,1} };
   vect<1> out [] = { {0},   {1},   {1},   {0}   };
   dataset<2,1> set( in, out, 4 );
-	typedef ann<2,2,1,SIGMOID,ONLINE> xorann;
+  typedef ann<2,2,1> xorann;
 
   cout.precision( 5 );
-	cout << fixed;
+  cout << fixed;
 
-	xorann neural;
+  xorann neural;
   neural.train( set, 4000 );
   cout << "GD, XOR neural nework training:\n";
   neural.results( set );
   cout << "  network evaluations: " << neural.evaluations() << endl;
 
-	swarm<xorann, xorann::size(), xorann::vector_type> npso( 20, neural_pso_init<xorann> );
-	npso.run( 500, neural_pso<2,1,xorann>( set ) );
-	cout << "\nPSO, XOR neural network training:\n";
-	npso.best().results( set );
-	cout << "  network evaluations: " << npso.best().evaluations() * 20 << endl;
+  /*swarm<xorann, xorann::size(), xorann::vector_type> npso( 20, neural_pso_init<xorann> );
+  npso.run( 500, neural_pso<2,1,xorann>( set ) );
+  cout << "\nPSO, XOR neural network training:\n";
+  npso.best().results( set );
+  cout << "  network evaluations: " << npso.best().evaluations() * 20 << endl;*/
 
-	swarm<V, 20> pso( 30, MyInit );
+  swarm<V, 20> pso( 30, MyInit );
   pso.run( 2000, ackley<V, S, dim> );
   cout << "\nPSO, ackley minimization:\n  " << pso << "\n  "
        << "function evaluations:  " << pso.explored() << endl;

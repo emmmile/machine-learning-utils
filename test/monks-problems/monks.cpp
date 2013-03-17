@@ -21,7 +21,6 @@ int main ( ) {
   cout.precision( 5 );
   cout << fixed;
 
-  progress_timer t;
   monks neural;
   neural.train( train, 200 );
   neural.results( train );
@@ -30,10 +29,11 @@ int main ( ) {
 
 
   /*swarm<monks, monks::size(), monks::vector_type> npso( 20, neural_pso_init<monks> );
-  npso.run( 1000, neural_pso<6,1,monks>( train ) );
+  npso.run( 200, neural_pso<17,1,monks>( train ) );
   npso.best().results( train );
   getchar();
-  npso.best().results( test );*/
+  npso.best().results( test );
+  cout << npso.best().error( test ) << endl;*/
 
   return 0;
 }
