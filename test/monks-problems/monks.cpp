@@ -22,18 +22,10 @@ int main ( ) {
   cout << fixed;
 
   monks neural;
-  neural.train( train, 200 );
+  neural.train( train, 300 );
   neural.results( train );
   getchar();
   neural.results( test );
-
-
-  /*swarm<monks, monks::size(), monks::vector_type> npso( 20, neural_pso_init<monks> );
-  npso.run( 200, neural_pso<17,1,monks>( train ) );
-  npso.best().results( train );
-  getchar();
-  npso.best().results( test );
-  cout << npso.best().error( test ) << endl;*/
 
   return 0;
 }

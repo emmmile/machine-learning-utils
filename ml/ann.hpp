@@ -136,19 +136,15 @@ public:
     base( seed, __weights.data(), __weights.data() + base::firstLayer::size() ) {
     // need to perform another initialization because the constructor of vector_type
     // has ben callen after the previous line, zeroing all weights.
-    this->__first.init( this->__generator );
-    this->__first.init( this->__generator );
+    init( this->__generator );
   }
 
-  /*void train ( const dataset<I,O,T>& set, const size_t epochs ) {
-    vector_type dw;
-    typename base::firstLayer::sharedType dwh( dw.data() );
-    typename base::secondLayer::sharedType dwo( dw.data() + base::firstLayer::size() );
-
-    this->train_gd( set, epochs, dwh, dwo );
-  }*/
-
   // operators for PSO
+  void init ( Random& gen ) {
+    this->__first.init( gen );
+    this->__first.init( gen );
+  }
+
   vector_type operator- ( const ann& another ) const {
     return __weights - another.__weights;
   }
@@ -160,8 +156,8 @@ public:
 };
 
 // Alias for that
-template<size_t I, size_t H, size_t O, activation A = SIGMOID, learning L = ONLINE, class T = double>
-using pann = class ann<I, H, O, A, L, T, SHARED, false>;
+template<size_t I, size_t H, size_t O, activation A = SIGMOID, class T = double>
+using pann = class ann<I, H, O, A, ONLINE, T, SHARED, false>;
 
 } // namespace ml
 

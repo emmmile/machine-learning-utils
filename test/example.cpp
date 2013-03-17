@@ -30,7 +30,7 @@ struct MyCrossover {
 };
 
 // define the mutation as template function object with state,
-// the most general case.
+// the most general case. T is a vector type
 template<class T, uint N>
 struct MyMutation {
   double step;
@@ -43,32 +43,40 @@ struct MyMutation {
 
 
 int main() {
+  // defining a small dataset for a neural network
   vect<2> in  [] = { {0,0}, {0,1}, {1,0}, {1,1} };
   vect<1> out [] = { {0},   {1},   {1},   {0}   };
   dataset<2,1> set( in, out, 4 );
+
+  // the neural network types, the first is standard, the second for PSO
   typedef ann<2,2,1> xorann;
+  typedef pann<2,2,1> pxorann;
 
   cout.precision( 5 );
   cout << fixed;
 
+  // testing the neural network on the XOR problem
   xorann neural;
-  neural.train( set, 4000 );
+  neural.train( set, 2000 );
   cout << "GD, XOR neural nework training:\n";
   neural.results( set );
   cout << "  network evaluations: " << neural.evaluations() << endl;
 
-  typedef pann<2,2,1> pxorann;
-  /*swarm<pxorann, pxorann::size(), pxorann::vector_type> npso( 20, neural_pso_init<pxorann> );
-  npso.run( 500, neural_pso<2,1,xorann>( set ) );
+  // training a neural network with PSO
+  neural_pso<2,1,pxorann> aux( set ); // this is needed for the initialization and the fitness
+  swarm<pxorann, pxorann::size(), pxorann::vector_type> npso( 20, aux );
+  npso.run( 500, aux );
   cout << "\nPSO, XOR neural network training:\n";
   npso.best().results( set );
-  cout << "  network evaluations: " << npso.best().evaluations() * 20 << endl;*/
+  cout << "  network evaluations: " << npso.best().evaluations() * 20 << endl;
 
+  // testing PSO "alone" on an optimization problem
   swarm<V, 20> pso( 30, MyInit );
   pso.run( 2000, ackley<V, S, dim> );
   cout << "\nPSO, ackley minimization:\n  " << pso << "\n  "
        << "function evaluations:  " << pso.explored() << endl;
 
+  // testing evolutionary computing alone on the same problem
   population<V> ec( 100, MyInit );
   ec.run( 500, ackley<V, S, dim>, MyMutation<V,dim>( 1.0 ), MyCrossover() );
   cout << "\nEC, ackley minimization:\n  " << ec << "\n  "

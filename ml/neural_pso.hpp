@@ -12,15 +12,15 @@ public:
   neural_pso( dataset<I, O>& set ) : set( set ) {
   }
 
+  // this is for the initialization, using the generator of PSO
+  inline void operator() ( N& v, Random& gen ) {
+    v.init( gen );
+  }
+
+  // this is the objective function, the MSE error of the network
   inline S operator() ( N& v ) {
     return v.error( set );
   }
 };
-
-template<class V>
-inline void neural_pso_init( V& v, Random& gen ) {
-  //v.init( gen );
-}
-
 
 #endif // NEURAL_PSO_HPP

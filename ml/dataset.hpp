@@ -18,6 +18,7 @@ class dataset {
   vector<outputType> __targets;
   T __threshold;
 public:
+  // load a dataset from a file (every row must have exactly I + O fields)
   dataset ( string filename, T t = 0.25 ) : __threshold( t ) {
     ifstream file( filename, ifstream::in );
     inputType itmp;
@@ -33,6 +34,7 @@ public:
     }
   }
 
+  // load a dataset from an existing sequence
   template <typename InputIter, typename OutputIter>
   dataset ( InputIter in, OutputIter out, size_t patterns, T t = 0.25 ) : __threshold( t ) {
     for ( size_t i = 0; i < patterns; ++i, ++in, ++out ) {
