@@ -19,6 +19,7 @@ inline static double sigmoid( const double& value, const double lambda = 1.0 ) {
   return 1.0 / ( 1.0 + exp( -lambda * value ) );
 }
 
+// this is the case for ONLINE learning, BATCH specialization a the end of the file
 template<size_t N, size_t I, activation A, learning L, type S, class T, shared V, bool = false>
 class neural_layer {
 protected:
@@ -26,6 +27,7 @@ protected:
   typedef vect<I, T> inType;
   typedef vect<I + 1, T> richInType;
 
+  // the weights type can be shared or not
   typedef typename conditional<V == SHARED, shared_matrix<N, I + 1, T>, matrix<N, I + 1, T> >::type M;
   M __weights;
   outType     __output;   // last output
@@ -41,9 +43,9 @@ protected:
   }
 
 public:
-  typedef M weightsType;
-
-  neural_layer ( Random& gen ) {
+  // see ann::ann() for details
+  neural_layer ( Random& gen, typename conditional<V == SHARED, T*, T>::type data = 0 )
+    : __weights( data ) {
     init( gen );
   }
 
@@ -97,7 +99,7 @@ public:
   }
 
   // the back-propagation (GD) algorithm
-  inType backprop ( outType& error, M& dw ) {
+  inType backprop_base ( outType& error, matrix<N, I + 1, T>& weights ) {
     outType delta = this->computedelta( error );
     inType out;
 
@@ -108,27 +110,41 @@ public:
     }
 
     // update the weights, the delta rule
-    if ( L == ONLINE )
-      __weights += this->eta * delta * this->__input.transpose();
-    if ( L == BATCH )
-      dw += this->eta * delta * this->__input.transpose();
+    weights += this->eta * delta * this->__input.transpose();
 
     return out;
   }
 
-  neural_layer& update ( M& dw ) {
-    __weights += dw;
+  inline inType backprop ( outType& error ) {
+    return backprop_base( error, __weights ); // remember, this is the ONLINE case
+  }
+
+  inline neural_layer& update ( ) {
     return *this;
   }
 };
 
-template<size_t N, size_t I, activation A, learning L, type S, class T>
-class neural_layer<N, I, A, L, S, T, SHARED, true> : neural_layer<N, I, A, L, S, T, SHARED, false> {
-  typedef neural_layer<N, I, A, L, S, T, SHARED, false> base;
+// BATCH specialization, I need it for adding a member variable, __dw
+template<size_t N, size_t I, activation A, type S, class T, shared V>
+class neural_layer<N,I,A,BATCH,S,T,V,false> : public neural_layer<N,I,A,BATCH,S,T,V,true> {
+  typedef neural_layer<N,I,A,BATCH,S,T,V,true> base;
+  typedef typename base::outType outType;
+  typedef typename base::inType inType;
+
+  matrix<N, I+1, T> __dw;
 public:
-  neural_layer ( Random& gen, T* data ) {
-    this->__weights = base::weightsType( data );
-    this->init( gen );
+  neural_layer ( Random& gen, typename conditional<V == SHARED, T*, T>::type data = 0 )
+    : base( gen, data ) {
+  }
+
+  inline neural_layer& update ( ) {
+    this->__weights += __dw;
+    __dw = matrix<N, I+1, T>( 0 );
+    return *this;
+  }
+
+  inline inType backprop ( outType& error ) {
+    return this->backprop_base( error, __dw );
   }
 };
 

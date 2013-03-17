@@ -16,8 +16,9 @@ class dataset {
 
   vector<inputType> __inputs;
   vector<outputType> __targets;
+  T __threshold;
 public:
-  dataset ( string filename ) {
+  dataset ( string filename, T t = 0.25 ) : __threshold( t ) {
     ifstream file( filename, ifstream::in );
     inputType itmp;
     outputType otmp;
@@ -33,7 +34,7 @@ public:
   }
 
   template <typename InputIter, typename OutputIter>
-  dataset ( InputIter in, OutputIter out, size_t patterns ) {
+  dataset ( InputIter in, OutputIter out, size_t patterns, T t = 0.25 ) : __threshold( t ) {
     for ( size_t i = 0; i < patterns; ++i, ++in, ++out ) {
       __inputs.push_back( *in );
       __targets.push_back( *out );
@@ -46,6 +47,10 @@ public:
 
   const inputType& input ( size_t i ) const {
     return __inputs[i];
+  }
+
+  const T& threshold ( ) const {
+    return __threshold;
   }
 
   const outputType& target ( size_t i ) const {

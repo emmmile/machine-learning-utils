@@ -57,7 +57,8 @@ int main() {
   neural.results( set );
   cout << "  network evaluations: " << neural.evaluations() << endl;
 
-  /*swarm<xorann, xorann::size(), xorann::vector_type> npso( 20, neural_pso_init<xorann> );
+  typedef pann<2,2,1> pxorann;
+  /*swarm<pxorann, pxorann::size(), pxorann::vector_type> npso( 20, neural_pso_init<pxorann> );
   npso.run( 500, neural_pso<2,1,xorann>( set ) );
   cout << "\nPSO, XOR neural network training:\n";
   npso.best().results( set );
