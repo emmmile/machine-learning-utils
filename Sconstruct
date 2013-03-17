@@ -17,4 +17,4 @@ env = Environment(
 
 env.Program( './test/example', './test/example.cpp' )
 env.Program( './test/benchmark', './test/benchmark.cpp' )
-env.Program( './test/monks/monks', './test/monks/monks.cpp' )
+env.Program( './test/monks-problems/monks', './test/monks-problems/monks.cpp' )
