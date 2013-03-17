@@ -9,11 +9,13 @@ using namespace boost;
 
 namespace ml {
 
-template<size_t I, size_t H, size_t O, activation A = SIGMOID, learning L = ONLINE, class T = double>
+// base class, it is goog for non-pso usage (shared == NOSHARED)
+template<size_t I, size_t H, size_t O, activation A = SIGMOID, learning L = ONLINE,
+         class T = double, shared S = NOSHARED, bool = false>
 class ann {
 protected:
-  typedef neural_layer<H,I,SIGMOID,L,HIDDEN,T> firstLayer;
-  typedef neural_layer<O,H,A,L,OUTPUT,T> secondLayer;
+  typedef neural_layer<H,I,SIGMOID,L,HIDDEN,T,S> firstLayer;
+  typedef neural_layer<O,H,A,L,OUTPUT,T,S> secondLayer;
   typedef typename firstLayer::weightsType firstLayerWeights;
   typedef typename secondLayer::weightsType secondLayerWeights;
 
@@ -40,10 +42,8 @@ public:
     return __second.compute( __first.compute( input ) );
   }
 
-  void train ( const dataset<I,O,T>& set, const size_t epochs ) {
-    firstLayerWeights dwh;
-    secondLayerWeights dwo;
-
+  void train_gd( const dataset<I,O,T>& set, const size_t epochs,
+                 firstLayerWeights& dwh, secondLayerWeights& dwo ) {
     for ( size_t e = 0; e < epochs; ++e ) {
       for ( size_t i = 0; i < set.patterns(); ++i ) {
         compute( set.input(i) );
@@ -60,6 +60,13 @@ public:
         dwo = secondLayerWeights( 0 );
       }
     }
+  }
+
+  void train ( const dataset<I,O,T>& set, const size_t epochs ) {
+    firstLayerWeights dwh;
+    secondLayerWeights dwo;
+
+    train_gd( set, epochs, dwh, dwo );
   }
 
   T error ( const dataset<I,O,T>& set ) {
@@ -93,6 +100,20 @@ public:
     return __evaluations;
   }
 };
+
+template<size_t I, size_t H, size_t O, activation A, learning L, class T>
+class ann<I, H, O, A, L, T, SHARED, true> : public ann<I, H, O, A, L, T, SHARED, false> {
+public:
+  ann ( uint32_t seed = Random::seed() ) :
+  {
+
+  }
+// definire vettore di pesi
+// ridefinire costruttuore, passando i puntatori
+// ridefinire train(), passando i puntatori
+};
+
+
 } // namespace ml
 
 #endif // ANN_HPP
