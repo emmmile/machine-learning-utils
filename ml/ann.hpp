@@ -100,9 +100,10 @@ public:
   void results ( const dataset<I,O,T>& set ) {
     size_t errors = 0;
     for ( size_t i = 0; i < set.patterns(); ++i ) {
-      outputType out = compute( set.input(i) );
-      bool diff = (set.target(i) - out).squaredNorm() > set.threshold();
-      cout << out << "\t(" << set.target(i) << ")" << (diff ? " <-" : "") << "\n";
+      outputType out = set.transform( compute( set.input(i) ) );
+      outputType tar = set.transform( set.target(i) );
+      bool diff = (tar - out).squaredNorm() > set.threshold();
+      cout << out.transpose() << "\t(" << tar.transpose() << ")" << (diff ? " <-" : "") << "\n";
       if ( diff ) ++errors;
     }
 
@@ -142,7 +143,7 @@ public:
   // operators for PSO
   void init ( Random& gen ) {
     this->__first.init( gen );
-    this->__first.init( gen );
+    this->__second.init( gen );
   }
 
   vector_type operator- ( const ann& another ) const {

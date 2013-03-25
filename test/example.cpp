@@ -52,7 +52,7 @@ int main() {
   typedef ann<2,2,1> xorann;
   typedef pann<2,2,1> pxorann;
 
-  cout.precision( 5 );
+  cout.precision( 4 );
   cout << fixed;
 
   // testing the neural network on the XOR problem

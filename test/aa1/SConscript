@@ -1,0 +1,9 @@
+
+Import('env')
+
+bld = Builder(action = 'test/aa1/convert.py < $SOURCE > $TARGET')
+env.Append(BUILDERS = {'ConvertFiles' : bld})
+env.ConvertFiles('LOC-TR', 'LOC-TR.csv')
+env.ConvertFiles('LOC-TS', 'LOC-TS.csv')
+
+env.Program( 'aa1', 'aa1.cpp' )

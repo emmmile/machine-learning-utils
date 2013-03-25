@@ -5,7 +5,6 @@
 ./math/random.hpp
 ./math/vect.hpp
 ./ml/concepts.hpp
-Sconstruct
 ml/swarm.hpp
 ml/population.hpp
 test/benchmark.cpp
@@ -13,12 +12,12 @@ math/main.cpp
 ml/neural_layer.hpp
 ml/ann.hpp
 ml/dataset.hpp
-test/monks-problems/monks-1.train
-test/monks-problems/monks-1.test
 test/monks-problems/monks.cpp
-test/monks-problems/monks-2.train
-test/monks-problems/monks-2.test
-test/monks-problems/monks-3.train
-test/monks-problems/monks-3.test
 ml/neural_pso.hpp
 test/monks-problems/convert.py
+test/aa1/aa1.cpp
+test/aa1/LOC-TS.csv
+test/aa1/LOC-TR.csv
+SConstruct
+test/monks-problems/SConscript
+test/aa1/SConscript

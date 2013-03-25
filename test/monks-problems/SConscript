@@ -1,0 +1,14 @@
+
+Import('env')
+
+bld = Builder(action = 'test/monks-problems/convert.py < $SOURCE > $TARGET')
+
+env.Append(BUILDERS = {'ConvertFiles' : bld})
+env.ConvertFiles('monks-1.test', 'original/monks-1.test')
+env.ConvertFiles('monks-1.train', 'original/monks-1.train')
+env.ConvertFiles('monks-2.test', 'original/monks-2.test')
+env.ConvertFiles('monks-2.train', 'original/monks-2.train')
+env.ConvertFiles('monks-3.test', 'original/monks-3.test')
+env.ConvertFiles('monks-3.train', 'original/monks-3.train')
+
+env.Program( 'monks', 'monks.cpp' ) 

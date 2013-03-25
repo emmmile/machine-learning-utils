@@ -1,0 +1,9 @@
+
+Import('env')
+
+env.Program( 'example', 'example.cpp' )
+env.Program( 'benchmark', 'benchmark.cpp' )
+
+Export('env')
+
+SConscript(['monks-problems/SConscript', 'aa1/SConscript'])
