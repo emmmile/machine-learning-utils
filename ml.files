@@ -21,3 +21,4 @@ test/aa1/LOC-TR.csv
 SConstruct
 test/monks-problems/SConscript
 test/aa1/SConscript
+test/aa1/convert.py
