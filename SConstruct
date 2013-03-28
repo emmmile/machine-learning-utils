@@ -3,9 +3,9 @@
 
 env = Environment(
   CCFLAGS = [
-    '-Wall', '-O3', '-std=c++11',
-    #'-ffast-math', '-funroll-loops', '-pipe', '-Wno-deprecated', '-msse2',
-    #'-mfpmath=sse', '-fomit-frame-pointer'
+    '-Wall', '-Werror', '-std=c++11',
+    '-O3', '-march=native', '-ffast-math', '-funroll-loops', '-pipe',
+    #'-msse', '-msse2', '-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-mfpmath=sse',
   ],
 
   CPPPATH=['#./ml','#./math'],

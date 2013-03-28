@@ -32,8 +32,15 @@ class dataset {
       if ( max < v[i][j] ) max = v[i][j];
     }
 
-    cout << "min and max on dimension " << j << " = " << min << " " << max << endl;
+    //cout << "min and max on dimension " << j << " = " << min << " " << max << endl;
   }
+
+  // common code between all constructors
+  void init ( ) {
+    for ( size_t i = 0; i < O; ++i ) __tscale(i,i) = 1;
+    for ( size_t i = 0; i < I; ++i ) __iscale(i,i) = 1;
+  }
+
 public:
   // load a dataset from a file (every row must have exactly I + O fields)
   dataset ( string filename, T t = 0.25 ) : __threshold( t ) {
@@ -51,13 +58,13 @@ public:
       __targets.push_back( otmp );
     }
 
-    for ( size_t i = 0; i < O; ++i ) __tscale(i,i) = 1;
-    for ( size_t i = 0; i < I; ++i ) __iscale(i,i) = 1;
+    init();
   }
 
   // load a dataset from an existing sequence
   template <typename InputIter, typename OutputIter>
   dataset ( InputIter in, OutputIter out, size_t patterns, T t = 0.25 ) : __threshold( t ) {
+    init();
     for ( size_t i = 0; i < patterns; ++i, ++in, ++out ) {
       __inputs.push_back( *in );
       __targets.push_back( *out );
@@ -104,12 +111,6 @@ public:
 
   outputType transform ( const outputType& v ) const {
     return __tscale.inverse() * v + __ttransl;
-  }
-
-  dataset split ( size_t line ) {
-    vector<inputType> in ( __inputs.begin() + line, __inputs.end() );
-    vector<outputType> out ( __targets.begin() + line, __targets.end() );
-    return dataset( in.begin(), out.begin(), patterns() - line, __threshold );
   }
 
   friend ostream& operator<< ( ostream & os, const dataset& d ) {

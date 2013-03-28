@@ -102,9 +102,10 @@ public:
     for ( size_t i = 0; i < set.patterns(); ++i ) {
       outputType out = set.transform( compute( set.input(i) ) );
       outputType tar = set.transform( set.target(i) );
-      bool diff = (tar - out).squaredNorm() > set.threshold();
-      cout << out.transpose() << "\t(" << tar.transpose() << ")" << (diff ? " <-" : "") << "\n";
-      if ( diff ) ++errors;
+
+      bool error = (tar - out).squaredNorm() > set.threshold();
+      cout << out.transpose() << "\t(" << tar.transpose() << ")" << (error ? " ### wrong" : "") << "\n";
+      errors += error;
     }
 
     cout << "total error: " << error( set ) << endl;

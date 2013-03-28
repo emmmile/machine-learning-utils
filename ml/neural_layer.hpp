@@ -50,8 +50,8 @@ public:
   }
 
   neural_layer& init ( Random& gen ) {
-    if ( A == LINEAR ) eta = 0.1;
-    if ( A == SIGMOID ) eta = 0.8;
+    if ( A == LINEAR ) eta = 0.02;
+    if ( A == SIGMOID ) eta = 0.6;
 
     for ( size_t i = 0; i < N; ++i )
       for ( size_t j = 0; j < I + 1; ++j )
