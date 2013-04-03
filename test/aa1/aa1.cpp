@@ -13,6 +13,7 @@ using namespace ml;
 
 
 int main ( ) {
+  cout << "ciao" << endl;
   dataset<6,2> train( "LOC-TR", 1 );
   typedef ann<6,100,2,LINEAR> aa1;
 

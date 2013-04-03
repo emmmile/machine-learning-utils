@@ -12,7 +12,10 @@ env = Environment(
   LIBS=[],
   LIBPATH=[],
   CPPDEFINES=[],
-  LINKFLAGS=['-s', '-Os']
+  LINKFLAGS=[
+    '-s', '-Os'
+    #'-g', '-pg'
+  ]
 )
 
 Export('env')

@@ -48,15 +48,23 @@ public:
     inputType itmp;
     outputType otmp;
 
-    while ( file.good() ) {
+    cout << "dataset" << endl;
+
+   do {
 			size_t read = 0;	
       for ( size_t i = 0; i < O && file.good(); ++i, ++read ) file >> otmp[i];
       for ( size_t i = 0; i < I && file.good(); ++i, ++read ) file >> itmp[i];
 
+    cout << "dataset" << endl;
+
       if ( read != O + I ) break;
       __inputs.push_back( itmp );
+    cout << "dataset" << endl;
       __targets.push_back( otmp );
-    }
+    cout << "dataset" << endl;
+    } while( false );
+
+    cout << "dataset" << endl;
 
     init();
   }
