@@ -37,6 +37,8 @@ class dataset {
 
   // common code between all constructors
   void init ( ) {
+    //__inputs.reserve( 1000 );
+    //__targets.reserve( 1000 );
     for ( size_t i = 0; i < O; ++i ) __tscale(i,i) = 1;
     for ( size_t i = 0; i < I; ++i ) __iscale(i,i) = 1;
   }
@@ -44,29 +46,20 @@ class dataset {
 public:
   // load a dataset from a file (every row must have exactly I + O fields)
   dataset ( string filename, T t = 0.25 ) : __threshold( t ) {
+    init();
     ifstream file( filename, ifstream::in );
     inputType itmp;
     outputType otmp;
 
-    cout << "dataset" << endl;
-
-   do {
+    while ( file.good() ) {
 			size_t read = 0;	
       for ( size_t i = 0; i < O && file.good(); ++i, ++read ) file >> otmp[i];
       for ( size_t i = 0; i < I && file.good(); ++i, ++read ) file >> itmp[i];
 
-    cout << "dataset" << endl;
-
       if ( read != O + I ) break;
       __inputs.push_back( itmp );
-    cout << "dataset" << endl;
       __targets.push_back( otmp );
-    cout << "dataset" << endl;
-    } while( false );
-
-    cout << "dataset" << endl;
-
-    init();
+    }
   }
 
   // load a dataset from an existing sequence

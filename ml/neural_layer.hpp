@@ -88,10 +88,10 @@ public:
   // compute the output of the network given an input
   const outType& compute ( const inType& input ) {
     // the calculation is basically a matrix-vector multiplication where
-    // the input has been added a ficticious value, -1, so there are two possibilities:
-    //   - copy the input vector in a bigger vector and perform the multiplication
+    // the input has been added a ficticious value, -1 (or +1), so there are two possibilities:
+    //   - copy the input vector in a bigger vector (with a 1) and perform the multiplication
     //   - split the multiplication as follows:
-    //     out = -W0 + W*in
+    //     out = -W0 + W*in      where W0 is a column of the weights matrix
     // i choose to copy the input, it's O(n) instead of O(n^2)
     this->setInput( input );
 
@@ -139,7 +139,7 @@ public:
 
   inline neural_layer& update ( ) {
     this->__weights += __dw;
-    __dw = matrix<N, I+1, T>( 0 );
+    __dw = matrix<N, I+1, T>( 0 ); // not so cool
     return *this;
   }
 
