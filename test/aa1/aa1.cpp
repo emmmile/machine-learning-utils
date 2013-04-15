@@ -14,14 +14,17 @@ using namespace ml;
 
 int main ( ) {
   dataset<6,2> train( "LOC-TR", 1 );
-  typedef ann<6,60,2,LINEAR> aa1;
+  typedef ann<6,32,2,LINEAR> aa1;
 
-  progress_timer timer;
+  //progress_timer timer;
   train.normalize();
+  dataset<6,2> test( train, 30 );
+  //cout << test << endl;
+
 
   aa1 neural;
-  neural.train( train, 25000 );
-  neural.results( train );
+  neural.train( train, test, 120 );
+  neural.results( test );
 
   return 0;
 }

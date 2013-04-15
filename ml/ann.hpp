@@ -85,6 +85,37 @@ public:
     }
   }
 
+  size_t train( const dataset<I,O,T>& set, const dataset<I,O,T>& test, const size_t epochs ) {
+    T minerror = error( test );
+    size_t minepoch = 0;
+
+    for ( size_t e = 0; e < epochs; ++e ) {
+      for ( size_t i = 0; i < set.patterns(); ++i ) {
+        compute( set.input(i) );
+
+        outputType hodelta = set.target(i) - __second.output();
+        hiddenType ihdelta = __second.backprop( hodelta );
+                              __first.backprop( ihdelta );
+      }
+
+      if ( L == BATCH ) {
+        __first.update( );
+        __second.update( );
+      }
+
+      T current = error( test );
+      if ( current < minerror ) {
+        minerror = current;
+        minepoch = e;
+      }
+
+      //cout << error( set ) << " " << current << endl;
+    }
+
+    cout << "Best generalization error of " << minerror << " at epoch " << minepoch << ".\n";
+    return minepoch;
+  }
+
   // returns the MSE, mean square error
   T error ( const dataset<I,O,T>& set ) {
     T sum = 0;
