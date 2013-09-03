@@ -22,7 +22,7 @@ int main ( ) {
   cout << fixed;
 
   monks neural;
-  neural.train( train, 300 );
+  neural.train( train, 200 );
   neural.results( train );
   getchar();
   neural.results( test );

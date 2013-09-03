@@ -19,7 +19,7 @@ class dataset {
   T __threshold;
   matrix<I,I,T> __iscale;
   matrix<O,O,T> __tscale; // affine transformations for normalization etc.
-  inputType __itrasl;
+  inputType __itransl;
   outputType __ttransl;
 
   template <typename Container>
@@ -44,6 +44,10 @@ class dataset {
   }
 
 public:
+  dataset ( T t = 0.25 ) : __threshold( t ) {
+    init( );
+  }
+
   // load a dataset from a file (every row must have exactly I + O fields)
   dataset ( string filename, T t = 0.25 ) : __threshold( t ) {
     init();
@@ -70,6 +74,29 @@ public:
       __inputs.push_back( *in );
       __targets.push_back( *out );
     }
+  }
+  
+  void split ( dataset& another, size_t n ) {
+    // my own random shuffle
+    Random gen;
+    for ( size_t i = 0; i < __inputs.size(); ++i ) {
+      size_t a = gen( __inputs.size() );
+      size_t b = gen( __inputs.size() );
+
+      swap( __inputs[a], __inputs[b] );
+      swap( __targets[a], __targets[b] );
+    }
+
+    assert( n < __inputs.size() );
+
+    another = dataset( __inputs.begin(), __targets.begin(), n );
+    __inputs.erase( __inputs.begin(), __inputs.begin() + n );
+    __targets.erase( __targets.begin(), __targets.begin() + n );
+    
+    another.__iscale = __iscale;
+    another.__tscale = __tscale;
+    another.__ttransl = __ttransl;
+    another.__itransl = __itransl;
   }
 
   // create a dataset picking random patterns from an existing one
@@ -117,7 +144,7 @@ public:
     T min, max;
     for ( size_t j = 0; j < I; ++j ) {
       stats( __inputs, j, min, max );
-      __itrasl[j] = ( max + min ) * 0.5;
+      __itransl[j] = ( max + min ) * 0.5;
       __iscale(j,j) = 2 / ( max - min ); // [-1.0, 1.0]
     }
 
@@ -128,7 +155,7 @@ public:
     }
 
     for ( size_t i = 0; i < patterns(); ++i ) {
-      __inputs[i] = __iscale * ( __inputs[i] - __itrasl );
+      __inputs[i] = __iscale * ( __inputs[i] - __itransl );
       __targets[i] = __tscale * ( __targets[i] - __ttransl );
     }
 
