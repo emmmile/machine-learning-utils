@@ -68,12 +68,13 @@ public:
     return __second.compute( __first.compute( input ) );
   }
 
-  void train( const dataset<I,O,T>& set, const size_t epochs ) {
+  void train( const dataset<I,O,T>& train, const size_t epochs,
+              const dataset<I,O,T>& test = dataset<I,O,T>(), bool verbose = false ) {
     for ( size_t e = 0; e < epochs; ++e ) {
-      for ( size_t i = 0; i < set.patterns(); ++i ) {
-        compute( set.input(i) );
+      for ( size_t i = 0; i < train.patterns(); ++i ) {
+        compute( train.input(i) );
 
-        outputType hodelta = set.target(i) - __second.output();
+        outputType hodelta = train.target(i) - __second.output();
         hiddenType ihdelta = __second.backprop( hodelta );
                               __first.backprop( ihdelta );
       }
@@ -82,6 +83,9 @@ public:
         __first.update( );
         __second.update( );
       }
+      
+      if ( verbose )
+        cout << error( train ) << " " << error( test ) << endl;
     }
   }
 

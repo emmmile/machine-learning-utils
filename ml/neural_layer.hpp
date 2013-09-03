@@ -10,10 +10,10 @@ using namespace math;
 
 namespace ml {
 
-enum activation { LINEAR, SIGMOID };
-enum learning { ONLINE, BATCH };
-enum type { HIDDEN, OUTPUT };
-enum shared { SHARED, NOSHARED };
+enum activation		{ LINEAR, SIGMOID };
+enum learning		{ ONLINE, BATCH };
+enum type		{ HIDDEN, OUTPUT };
+enum shared		{ SHARED, NOSHARED };
 
 inline static double sigmoid( const double& value, const double lambda = 1.0 ) {
   return 1.0 / ( 1.0 + exp( -lambda * value ) );
@@ -50,8 +50,8 @@ public:
   }
 
   neural_layer& init ( Random& gen ) {
-    if ( A == LINEAR ) eta = 0.02;
-    if ( A == SIGMOID ) eta = 0.6;
+    if ( A == LINEAR ) eta = 0.005;
+    if ( A == SIGMOID ) eta = 0.1;
 
     for ( size_t i = 0; i < N; ++i )
       for ( size_t j = 0; j < I + 1; ++j )
