@@ -13,14 +13,24 @@ using namespace ml;
 
 
 int main ( ) {
-  dataset<6,2> train( "LOC-TR", 1 );
+  double total = 0;
+  int runs = 100;
 
-  dataset<6,2> validation;
-  train.split( validation, 50 );
-  typedef ann<6,5,2,LINEAR> aa1;
+  for ( int i = 0; i < runs; ++i ) {
+    dataset<6,2> train( "LOC-TR", 1 );
+    train.normalize();
+    dataset<6,2> validation;
+    train.split( validation, 50 );
+    typedef ann<6,10,2,LINEAR> aa1;
 
-  neural.train( train, 100000, validation, true );
-  //neural.results( validation );
 
+
+
+    aa1 neural;
+    total += neural.train( train, 5000, validation, false );
+    //neural.results( validation );
+  }
+
+  cout << total / runs << endl;
   return 0;
 }

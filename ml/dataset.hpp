@@ -99,23 +99,6 @@ public:
     another.__itransl = __itransl;
   }
 
-  // create a dataset picking random patterns from an existing one
-  // the chosen patterna are removed from another
-  dataset ( dataset& another, size_t patterns )
-  : __threshold( another.threshold() ), __iscale( another.__iscale ),
-    __tscale( another.__tscale ), __itrasl( another.__itrasl ),
-    __ttransl( another.__ttransl ) {
-    assert ( patterns < another.patterns() );
-
-    Random gen( 0 ); // deterministic choice, for testing
-    for ( size_t i = 0; i < patterns; ++i ) {
-      size_t index = gen.integer( 0, another.patterns() );
-      __inputs.push_back( another.__inputs[index] );
-      __targets.push_back( another.__targets[index] );
-      another.remove( index );
-    }
-  }
-
   dataset& remove ( size_t i ) {
     swap( __inputs[i], __inputs.back() );
     swap( __targets[i], __targets.back() );

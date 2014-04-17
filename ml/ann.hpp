@@ -68,8 +68,10 @@ public:
     return __second.compute( __first.compute( input ) );
   }
 
-  void train( const dataset<I,O,T>& train, const size_t epochs,
+  double train( const dataset<I,O,T>& train, const size_t epochs,
               const dataset<I,O,T>& test = dataset<I,O,T>(), bool verbose = false ) {
+
+              double minimum = std::numeric_limits<double>::max();
     for ( size_t e = 0; e < epochs; ++e ) {
       for ( size_t i = 0; i < train.patterns(); ++i ) {
         compute( train.input(i) );
@@ -86,7 +88,11 @@ public:
       
       if ( verbose )
         cout << error( train ) << " " << error( test ) << endl;
+
+      if ( error( test ) < minimum ) minimum = error( test );
     }
+
+    return minimum;
   }
 
   size_t train( const dataset<I,O,T>& set, const dataset<I,O,T>& test, const size_t epochs ) {
