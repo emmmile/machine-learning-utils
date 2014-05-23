@@ -14,11 +14,22 @@ To compile the tests just run:
 
 ```
 #!sh
+git clone https://emmmile@bitbucket.org/emmmile/ml.git
 cd ml/
 git submodule init
 git submodule update
 scons
 ```
+
+
+To run the example application instead:
+
+```
+#!sh
+cd test
+./example
+```
+
 
 ### Questions? ###
 
