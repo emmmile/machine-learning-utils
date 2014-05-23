@@ -22,4 +22,4 @@ scons
 
 ### Questions? ###
 
-Write me at emilio.deltessa@gmail.com
+Write me at emilio.deltessa@gmail.com.
