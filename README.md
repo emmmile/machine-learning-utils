@@ -21,6 +21,16 @@ git submodule update
 scons
 ```
 
+
+To run the example application instead:
+
+```
+#!sh
+cd test
+./example
+```
+
+
 ### Questions? ###
 
 Write me at emilio.deltessa@gmail.com.
