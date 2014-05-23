@@ -17,7 +17,7 @@ env = Environment(
   LIBPATH=[],
   CPPDEFINES=[],
   LINKFLAGS=[
-    '-s', '-Os'
+    '-Os'
     #'-g'
   ]
 )
